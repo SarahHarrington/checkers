@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Checkers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="styles/style.css" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">Checkers</header>
+    <div class="game-message"></div>
+    <div class="game-board">
+      <!-- Game Board-->
+
+      <div class="board-row">
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+        </div>
+
+      <div class="board-row">
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+      </div>
+
+      <div class="board-row">
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+        </div>
+
+      <div class="board-row">
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+      </div>
+
+      <div class="board-row">
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+        </div>
+
+      <div class="board-row">
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+      </div>
+
+      <div class="board-row">
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+          <div class="board-space"></div>
+          <div class="board-space playable"></div>
+        </div>
+
+      <div class="board-row">
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+      </div>
+
+    </div
+    <!-- END Game Board -->
+    <div class="side-panel">
+      <div><button id='start-game'>Start Game!</button></div>
+      <div>You are player: {}</div>
+      <div id="current-turn">Current Player</div>
+
+      <div class="captured-pieces">Stored Pieces</div>
+      <div id="0"></div>
+    </div>
+  </div>
+  <script src="/scripts/client.js"></script>
+
+</body>
+
+</html>
