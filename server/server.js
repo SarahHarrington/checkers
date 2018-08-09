@@ -60,35 +60,75 @@ io.on('connection', function (socket) {
     console.log('clientTurn', clientTurn)
     console.log(validMoves[clientTurn.startSpace]);
 
-    if (gameState[clientTurn.endSpace] !== 0) {
+    if (gameState[clientTurn.endSpace].player !== 0) {
+      console.log(gameState[clientTurn.endSpace]);
       console.log('invalidMove')
       io.emit('invalidMove');
     }
     else {
       console.log('in the else');
       //need to check if the end space is in the list of valid moves
-      console.log(validMoves[clientTurn.startSpace]);
       let possibleMoves = validMoves[clientTurn.startSpace];
-
+      console.log('possibleMoves', possibleMoves);
       //how do I went to define/check the piece type?
+      let forward = possibleMoves.f.filter(move => move === parseInt(clientTurn.endSpace));
+      let forwardJump = possibleMoves.fj.filter(move => move === parseInt(clientTurn.endSpace));
+      let rear = possibleMoves.r.filter(move => move === parseInt(clientTurn.endSpace));
+      let rearJump = possibleMoves.rj.filter(move => move === parseInt(clientTurn.endSpace));
 
+      console.log('the moves', forward, forwardJump, rear, rearJump);
+      console.log('clientTurn.player', clientTurn.player);
       if (clientTurn.player === 'p1') {
-        possibleMoves.f;
-        possibleMoves.fj;
+        if (forward.length > 0) {
+          gameState[clientTurn.endSpace].player = currentTurn.player;
+          console.log('in the reg play for p1')
+          //end the turn
+        }
+        if (forwardJump.length > 0) {
+          //TODO: check if pieces is on jumped space first
+          gameState[clientTurn.endSpace].player = currentTurn.player;
+          //check for additional jumps
+          console.log('in the player 1 jump', validMoves[clientTurn.endSpace]);
+          let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
+          let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
+
+          //check if jumping again, pass variables to function?
+          checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
+
+        }
       }
       if (clientTurn.player === 'p2') {
-        possibleMoves.r;
-        possibleMoves.rj;
+        if (rear.length > 0) {
+          gameState[clientTurn.endSpace].player = currentTurn.player;
+          //update the space and check for more moves
+        }
+        if (rearJump.length > 0) {
+          gameState[clientTurn.endSpace].player = currentTurn.player;
+
+          let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
+          let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
+        }
       }
       if (clientTurn.plaeyr === 'king') {
-        possibleMoves;
+        if (forward.length > 0 || rear.length > 0) {
+          //update the sapce and check for more moves
+        }
+        if (forwardJump.length > 0 || rearJump.length > 0) {
+
+        }
       }
     }
-
   })
-
-
 })
+
+function checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces) {
+  let leftMove = gameState[nextPossibleMoves[0]].player;
+  let rightMove = gameState[nextPossibleMoves[1]].player;
+  let leftJumpedSpace = gameState[possibleJumpedSpaces[0]].player;
+  let rightJumpedSpace = gameState[possibleJumpedSpaces[1]].player;
+
+  console.log('left and right moves', leftMove, rightMove);
+}
 
 
 server.listen(5000);
