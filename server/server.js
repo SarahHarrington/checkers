@@ -21,6 +21,8 @@ let currentTurn = {
   endingJump: false  //notifies that the jump turn is ending
 }
 
+//TODO: What to do about a piece picked up and put back on starting space?
+
 app.use(express.static(`${__dirname}/public`));
 
 io.on('connection', function (socket) {
@@ -57,20 +59,14 @@ io.on('connection', function (socket) {
   })
 
   socket.on('checkIfValidMove', clientTurn => {
-    console.log('clientTurn', clientTurn)
-    console.log(validMoves[clientTurn.startSpace]);
 
     if (gameState[clientTurn.endSpace].player !== 0) {
-      console.log(gameState[clientTurn.endSpace]);
       console.log('invalidMove')
       io.emit('invalidMove');
     }
     else {
       console.log('in the else');
-      //need to check if the end space is in the list of valid moves
       let possibleMoves = validMoves[clientTurn.startSpace];
-      console.log('possibleMoves', possibleMoves);
-      //how do I went to define/check the piece type?
       let forward = possibleMoves.f.filter(move => move === parseInt(clientTurn.endSpace));
       let forwardJump = possibleMoves.fj.filter(move => move === parseInt(clientTurn.endSpace));
       let rear = possibleMoves.r.filter(move => move === parseInt(clientTurn.endSpace));
@@ -80,27 +76,40 @@ io.on('connection', function (socket) {
       console.log('clientTurn.player', clientTurn.player);
       if (clientTurn.player === 'p1') {
         if (forward.length > 0) {
+          gameState[clientTurn.startSpace].player = 0;
           gameState[clientTurn.endSpace].player = currentTurn.player;
           console.log('in the reg play for p1')
-          //end the turn
+          //TODO: End the turn
         }
         if (forwardJump.length > 0) {
-          //TODO: check if pieces is on jumped space first
-          gameState[clientTurn.endSpace].player = currentTurn.player;
-          //check for additional jumps
-          console.log('in the player 1 jump', validMoves[clientTurn.endSpace]);
-          let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
-          let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
+          currentTurn.jump = true;
+          let jumpToSpaceIndex = possibleMoves.fj.indexOf(parseInt(clientTurn.endSpace));
+          let checkingPieceJumped = possibleMoves.f[jumpToSpaceIndex];
 
-          //check if jumping again, pass variables to function?
-          checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
-
+          if (gameState[checkingPieceJumped].player === 'p2') {
+            gameState[clientTurn.startSpace].player = 0;
+            gameState[clientTurn.endSpace].player = currentTurn.player;
+  
+            //check for additional jumps
+            console.log('in the player 1 jump', validMoves[clientTurn.endSpace]);
+            let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
+            let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
+  
+            //check if jumping again, pass variables to function?
+            checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
+          }
+          else {
+            io.emit('invalidMove');
+          }
+          // let gamePieceJumped = gameState[checkingPieceJumped];
+          // console.log('gamePicejumped', gamePieceJumped.player)
         }
       }
       if (clientTurn.player === 'p2') {
         if (rear.length > 0) {
+          gameState[clientTurn.startSpace].player = 0;
           gameState[clientTurn.endSpace].player = currentTurn.player;
-          //update the space and check for more moves
+          //TODO: End the turn
         }
         if (rearJump.length > 0) {
           gameState[clientTurn.endSpace].player = currentTurn.player;
@@ -128,6 +137,8 @@ function checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces) {
   let rightJumpedSpace = gameState[possibleJumpedSpaces[1]].player;
 
   console.log('left and right moves', leftMove, rightMove);
+
+  //TODO: How will I prevent them from doing a single space move?
 }
 
 
