@@ -74,6 +74,7 @@ io.on('connection', function (socket) {
 
       console.log('the moves', forward, forwardJump, rear, rearJump);
       console.log('clientTurn.player', clientTurn.player);
+      //player one
       if (clientTurn.player === 'p1') {
         if (forward.length > 0) {
           gameState[clientTurn.startSpace].player = 0;
@@ -82,11 +83,11 @@ io.on('connection', function (socket) {
           //TODO: End the turn
         }
         if (forwardJump.length > 0) {
-          currentTurn.jump = true;
           let jumpToSpaceIndex = possibleMoves.fj.indexOf(parseInt(clientTurn.endSpace));
           let checkingPieceJumped = possibleMoves.f[jumpToSpaceIndex];
 
           if (gameState[checkingPieceJumped].player === 'p2') {
+            currentTurn.jump = true;
             gameState[clientTurn.startSpace].player = 0;
             gameState[clientTurn.endSpace].player = currentTurn.player;
   
@@ -101,8 +102,6 @@ io.on('connection', function (socket) {
           else {
             io.emit('invalidMove');
           }
-          // let gamePieceJumped = gameState[checkingPieceJumped];
-          // console.log('gamePicejumped', gamePieceJumped.player)
         }
       }
       if (clientTurn.player === 'p2') {
