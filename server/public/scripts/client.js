@@ -57,6 +57,11 @@ socket.on('invalidMove', () => {
   console.log('that move is invalid');
 })
 
+socket.on('endOfTheTurn', serverTurn => {
+  console.log('server Turn', serverTurn);
+  endOfTheTurn(serverTurn);
+})
+
 // ===================== FUNCTIONS =======================
 function dragStartHandler(e) {
   currentTurn.activePiece = e.target;
@@ -105,5 +110,15 @@ function changeTurn(playerTurn) {
       piece.removeAttribute('ondragstart', 'dragStartHandler(event)');
     })
     currentPlayerDisplay.innerHTML = '<p>Player 2 Go!</p>'
+  }
+}
+
+function endOfTheTurn(serverTurn) {
+  if (serverTurn.jump === true) {
+    console.log('do the jump')
+  }
+  else {
+  console.log(currentTurn.activePiece);
+  document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
   }
 }
