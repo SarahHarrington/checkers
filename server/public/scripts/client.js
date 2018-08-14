@@ -13,6 +13,7 @@ let currentTurn = {
   player: null, //currently tracking the piece type for player
   startSpace: null, // the piece the drag start action happened on
   endSpace: null, //The space in the drop
+  jumpSpace: null,
   activePiece: null, //the game piece selected
   isJump: false, //if the move is a jump
   endingJump: false  //notifies that the jump turn is ending
@@ -76,8 +77,15 @@ function dragoverHandler(e) {
 
 function dropHandler(e) {
   currentTurn.endSpace = e.target.id;
+  console.log('in the drop handler', currentTurn);
   e.preventDefault();
-  socket.emit('checkIfValidMove', currentTurn);
+  if (currentTurn.endSpace === 'p1' || currentTurn.endSpace === 'p2') {
+    console.log('in the drop if')
+    return;
+  }
+  else {
+    socket.emit('checkIfValidMove', currentTurn);
+  }
 }
 
 //starts the game when button clicked
@@ -116,6 +124,10 @@ function changeTurn(playerTurn) {
 function endOfTheTurn(serverTurn) {
   if (serverTurn.jump === true) {
     console.log('do the jump')
+    console.log('jumpSpace', serverTurn.jumpSpace);
+    document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
+    let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
+    document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
   }
   else {
   console.log(currentTurn.activePiece);
