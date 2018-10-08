@@ -54,6 +54,10 @@ socket.on('changePlayerTurn', serverTurn => {
   changeTurn(currentTurn.player);
 })
 
+socket.on('updateBoard', serverTurn => {
+  updateBoard(serverTurn);
+})
+
 socket.on('invalidMove', () => {
   console.log('that move is invalid');
 })
@@ -92,6 +96,14 @@ function dropHandler(e) {
 function startTheGame() {
   socket.emit('startTheGame');
 }
+
+//updates the board
+function updateBoard(serverTurn) {
+  document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
+  let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
+  document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
+}
+
 
 //Changes the pieces to draggable based on the player turn
 function changeTurn(playerTurn) {

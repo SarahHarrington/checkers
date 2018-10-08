@@ -54,22 +54,25 @@ io.on('connection', function (socket) {
       state.player = 0;
     })
 
-    for (let i = 0; i <= 11; i++) {
+    for (let i = 1; i <= 12; i++) {
       gameState[i].player = 'p1';
     }
-    for (let i = 20; i <= 31; i++) {
-      gameState[i].player - 'p2';
+    for (let i = 21; i <= 32; i++) {
+      gameState[i].player = 'p2';
     }
-
+    console.log(gameState)
   })
 
 
   socket.on('checkIfValidMove', clientTurn => {
-
+    console.log('checkIfValidMove', clientTurn);
+    console.log('end space', gameState[clientTurn.endSpace]);
     if (gameState[clientTurn.endSpace].player !== 0) {
+      console.log('initial invalid')
       io.emit('invalidMove');
     }
     else {
+      console.log('gameState', gameState);
       let possibleMoves = validMoves[clientTurn.startSpace];
       let forward = possibleMoves.f.filter(move => move === parseInt(clientTurn.endSpace));
       let forwardJump = possibleMoves.fj.filter(move => move === parseInt(clientTurn.endSpace));
@@ -96,9 +99,10 @@ io.on('connection', function (socket) {
             currentTurn.jump = true;
             currentTurn.jumpSpace = checkingPieceJumped;
 
-
             //TODO: emit back move the piece
             
+            gameState[clientTurn.startSpace].player = 0;
+            gameState[clientTurn.endSpace].player = currentTurn.player;
             //check for additional jumps
             console.log('in the player 1 jump', validMoves[clientTurn.endSpace]);
             let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
@@ -108,6 +112,7 @@ io.on('connection', function (socket) {
             checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
           }
           else {
+            console.log('p1 invalid')
             io.emit('invalidMove');
           }
         }
@@ -142,6 +147,7 @@ io.on('connection', function (socket) {
             checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
           }
           else {
+            console.log('p2 invalid')
             io.emit('invalidMove');
           }
         }
@@ -172,22 +178,18 @@ function checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces) {
     console.log('leftMove if')
     if (currentTurn.player === 'p1' && leftJumpedSpace === 'p2') {
       //let game play continue
-      gameState[clientTurn.startSpace].player = 0;
-      gameState[clientTurn.endSpace].player = currentTurn.player;
       console.log('left if')
+      io.emit('updateBoard', currentTurn)
     }
     else if (currentTurn.player === 'p2' && leftJumpedSpace === 'p1') {
       //let game play continue
-      gameState[clientTurn.startSpace].player = 0;
-      gameState[clientTurn.endSpace].player = currentTurn.player;
       console.log('left else if')
+      io.emit('updateBoard', currentTurn)
+
     }
     else {
       //end the turn
       console.log('left else for end the turn')
-      // io.emit('endOfTheTurn', currentTurn);
-      gameState[clientTurn.startSpace].player = 0;
-      gameState[clientTurn.endSpace].player = currentTurn.player;
       endOfTheTurn();
       currentTurn.jump = false;
 
@@ -197,22 +199,19 @@ function checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces) {
     console.log('rightMove if')
     if (currentTurn.player === 'p1' && rightJumpedSpace === 'p2') {
       //let game play continue
-      gameState[clientTurn.startSpace].player = 0;
-      gameState[clientTurn.endSpace].player = currentTurn.player;
       console.log('right if')
+      io.emit('updateBoard', currentTurn)
+
     }
     else if (currentTurn.player === 'p2' && rightJumpedSpace === 'p1') {
       //let game play continue
-      gameState[clientTurn.startSpace].player = 0;
-      gameState[clientTurn.endSpace].player = currentTurn.player;
       console.log('right else if')
+      io.emit('updateBoard', currentTurn)
+
     }
     else {
       //end the turn
       console.log('right end the turn else')
-      gameState[clientTurn.startSpace].player = 0;
-      gameState[clientTurn.endSpace].player = currentTurn.player;
-      // io.emit('endOfTheTurn', currentTurn);
       endOfTheTurn();
       currentTurn.jump = false;
 
@@ -223,7 +222,6 @@ function checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces) {
     console.log('in the end turn else')
     endOfTheTurn();
     currentTurn.jump = false;
-
   }
 }
 
@@ -231,12 +229,14 @@ function endOfTheTurn() {
   io.emit('endOfTheTurn', currentTurn);
   if (currentTurn.player === 'p1') {
     console.log('changed to player 2')
+    console.log(gameState)
     currentTurn.player = 'p2';
     io.emit('changePlayerTurn', currentTurn);
 
   }
   else if (currentTurn.player === 'p2') {
     console.log('changed to player 1')
+    console.log(gameState)
     currentTurn.player = 'p1';
     io.emit('changePlayerTurn', currentTurn);
   }
