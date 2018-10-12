@@ -84,15 +84,21 @@ io.on('connection', function (socket) {
       
       /*************  PLAYER ONE  *****************/
       if (clientTurn.player === 'p1') {
-        console.log('p1')
+        console.log('p1');
+        console.log(currentTurn);
+        if (currentTurn.endSpace === '29' || currentTurn.endSpace === '30' || currentTurn.endSpace === '31' || currentTurn.endSpace === '32') {
+          
+        }
         if (forward.length > 0) {
+          console.log('forward', forward);
           gameState[clientTurn.startSpace].player = 0;
           gameState[clientTurn.endSpace].player = currentTurn.player;
           endOfTheTurn();
         }
         if (forwardJump.length > 0) {
-          let jumpToSpaceIndex = possibleMoves.fj.indexOf(parseInt(clientTurn.endSpace));
-          let checkingPieceJumped = possibleMoves.f[jumpToSpaceIndex];
+          console.log('forwardjump', forwardJump)
+          let jumpToSpaceIndex = possibleMoves.fj.indexOf(parseInt(clientTurn.endSpace)); //ending spot
+          let checkingPieceJumped = possibleMoves.f[jumpToSpaceIndex]; //jumped space
           console.log('checkingPieceJumped', checkingPieceJumped);
 
           if (gameState[checkingPieceJumped].player === 'p2') {
@@ -101,15 +107,22 @@ io.on('connection', function (socket) {
 
             //TODO: emit back move the piece
             
+            //updates the gamestate
             gameState[clientTurn.startSpace].player = 0;
             gameState[clientTurn.endSpace].player = currentTurn.player;
+            gameState[checkingPieceJumped].player = 0;
+            
             //check for additional jumps
             console.log('in the player 1 jump', validMoves[clientTurn.endSpace]);
             let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
             let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
-            
-            //check if jumping again, pass variables to function?
+            if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
+              endOfTheTurn();
+            }
+            else {
+              //check if jumping again, pass variables to function?
             checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
+            }
           }
           else {
             console.log('p1 invalid')
@@ -119,13 +132,15 @@ io.on('connection', function (socket) {
       }
       if (clientTurn.player === 'p2') {
         console.log('p2')
+        console.log(currentTurn);
         if (rear.length > 0) {
+          console.log('rear', rear);
           gameState[clientTurn.startSpace].player = 0;
           gameState[clientTurn.endSpace].player = currentTurn.player;
-          // io.emit('endOfTheTurn', currentTurn);
           endOfTheTurn();
         }
         if (rearJump.length > 0) {
+          console.log('rearjump', rearJump);
           let jumpToSpaceIndex = possibleMoves.rj.indexOf(parseInt(clientTurn.endSpace));
           let checkingPieceJumped = possibleMoves.r[jumpToSpaceIndex];
           console.log('checkingPieceJumped', checkingPieceJumped);
@@ -136,15 +151,21 @@ io.on('connection', function (socket) {
 
             gameState[clientTurn.startSpace].player = 0;
             gameState[clientTurn.endSpace].player = currentTurn.player;
+            gameState[checkingPieceJumped].player = 0;
+
             //TODO: emit back move the piece
             
             //check for additional jumps
             console.log('in the player 2 jump', validMoves[clientTurn.endSpace]);
             let nextPossibleMoves = validMoves[clientTurn.endSpace].rj;
             let possibleJumpedSpaces = validMoves[clientTurn.endSpace].r;
-            
-            //check if jumping again, pass variables to function?
+            if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
+              endOfTheTurn();
+            }
+            else {
+              //check if jumping again, pass variables to function?
             checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
+            }
           }
           else {
             console.log('p2 invalid')
@@ -165,6 +186,8 @@ io.on('connection', function (socket) {
 })
 
 function checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces) {
+  console.log('next possible moves:', nextPossibleMoves);
+  console.log('possible jumped spaces:', possibleJumpedSpaces);
   let leftMove = gameState[nextPossibleMoves[0]].player;
   let rightMove = gameState[nextPossibleMoves[1]].player;
   let leftJumpedSpace = gameState[possibleJumpedSpaces[0]].player;
