@@ -87,7 +87,7 @@ io.on('connection', function (socket) {
         console.log('p1');
         console.log(currentTurn);
         if (currentTurn.endSpace === '29' || currentTurn.endSpace === '30' || currentTurn.endSpace === '31' || currentTurn.endSpace === '32') {
-          
+          console.log('checking if kinged', gameState[parseInt(currentTurn.startSpace)]);
         }
         if (forward.length > 0) {
           console.log('forward', forward);
@@ -133,6 +133,9 @@ io.on('connection', function (socket) {
       if (clientTurn.player === 'p2') {
         console.log('p2')
         console.log(currentTurn);
+        if (currentTurn.endSpace === '1' || currentTurn.endSpace === '2' || currentTurn.endSpace === '3' || currentTurn.endSpace === '4') {
+          console.log('checking if kinged', gameState[parseInt(currentTurn.startSpace)]);
+        }
         if (rear.length > 0) {
           console.log('rear', rear);
           gameState[clientTurn.startSpace].player = 0;
@@ -173,7 +176,7 @@ io.on('connection', function (socket) {
           }
         }
       }
-      if (clientTurn.plaeyr === 'king') {
+      if (clientTurn.player === 'king') {
         if (forward.length > 0 || rear.length > 0) {
           //update the sapce and check for more moves
         }
