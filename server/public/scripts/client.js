@@ -71,9 +71,11 @@ socket.on('endOfTheTurn', serverTurn => {
 // ===================== FUNCTIONS =======================
 function dragStartHandler(e) {
   currentTurn.activePiece = e.target;
-  currentTurn.startSpace = e.target.parentElement.id;
-  console.log('drag start target', e.target.parentElement.id);
-  // socket.emit('moveStarted', currentTurn);
+  if (isNaN(parseInt(e.target.parentElement.id))) {
+    currentTurn.startSpace = e.target.parentElement.parentElement.id;
+  } else {
+    currentTurn.startSpace = e.target.parentElement.id;
+  }
 }
 
 function dragoverHandler(e) {
