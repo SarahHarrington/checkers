@@ -8,6 +8,7 @@ const capturedPieces = document.querySelector('.captured-pieces');
 const gameMessageDisplay = document.querySelector('.game-message');
 const startGameButton = document.getElementById('start-game').addEventListener('click', startTheGame);
 const currentPlayerDisplay = document.getElementById('current-turn');
+const playerDeclare = document.querySelector('.playerDeclare');
 
 let currentTurn = {
   player: null, //currently tracking the piece type for player
@@ -17,7 +18,7 @@ let currentTurn = {
   activePiece: null, //the game piece selected
   isJump: false, //if the move is a jump
   endingJump: false,  //notifies that the jump turn is ending
-  king: false
+  king: false, 
 }
 
 for (let i = 0; i < boardSpaces.length; i++) {
@@ -66,6 +67,14 @@ socket.on('invalidMove', () => {
 socket.on('endOfTheTurn', serverTurn => {
   console.log('server Turn', serverTurn);
   endOfTheTurn(serverTurn);
+})
+
+socket.on('playerOne', () => {
+  playerDeclare.innerHTML = `You are player one!`;
+})
+
+socket.on('playerTwo', () => {
+  playerDeclare.innerHTML = `You are player two!`;
 })
 
 // ===================== FUNCTIONS =======================
