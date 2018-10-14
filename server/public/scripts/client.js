@@ -16,7 +16,8 @@ let currentTurn = {
   jumpSpace: null,
   activePiece: null, //the game piece selected
   isJump: false, //if the move is a jump
-  endingJump: false  //notifies that the jump turn is ending
+  endingJump: false,  //notifies that the jump turn is ending
+  king: false
 }
 
 for (let i = 0; i < boardSpaces.length; i++) {
@@ -71,6 +72,7 @@ socket.on('endOfTheTurn', serverTurn => {
 function dragStartHandler(e) {
   currentTurn.activePiece = e.target;
   currentTurn.startSpace = e.target.parentElement.id;
+  console.log('drag start target', e.target.parentElement.id);
   // socket.emit('moveStarted', currentTurn);
 }
 
@@ -104,7 +106,6 @@ function updateBoard(serverTurn) {
   document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
 }
 
-
 //Changes the pieces to draggable based on the player turn
 function changeTurn(playerTurn) {
   if (playerTurn === 'p1') {
@@ -134,15 +135,21 @@ function changeTurn(playerTurn) {
 }
 
 function endOfTheTurn(serverTurn) {
+  console.log(serverTurn);
+  let activePiece = document.getElementById(serverTurn.startSpace).firstChild;;
   if (serverTurn.jump === true) {
     console.log('do the jump')
     console.log('jumpSpace', serverTurn.jumpSpace);
-    document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
+    document.getElementById(serverTurn.endSpace).appendChild(activePiece);
     let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
     document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
   }
-  else {
-  console.log(currentTurn.activePiece);
-  document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
+  if (serverTurn.king === true) {
+    console.log('figure out how to add king class?');
+    document.getElementById(serverTurn.endSpace).appendChild(activePiece);
+    activePiece.innerHTML = '<i class="fas fa-crown"></i>';
+  } else {
+    console.log(currentTurn.activePiece);
+    document.getElementById(serverTurn.endSpace).appendChild(activePiece);
   }
 }

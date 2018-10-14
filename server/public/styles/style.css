@@ -60,6 +60,13 @@
   cursor: -webkit-grab;
 }
 
+.fa-crown {
+  color: white;
+  padding-top: 50%;
+  padding-left: 50%;
+  font-size: 1rem;
+}
+
 .no-move {
   opacity: .5;
 }
