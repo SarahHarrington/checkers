@@ -11,6 +11,7 @@ let playerOne = null;
 let playerTwo = null;
 
 let playerQueue = [];
+let activeGame = false;
 
 let currentTurn = {
   player: null, //currently tracking the piece type for player
@@ -37,8 +38,12 @@ io.on('connection', function (socket) {
   }
   else {
     playerQueue.push({ id: socket.id });
-    io.to(socket.id).emit('viewingGame', gameState);
+    io.to(socket.id).emit('viewingGame');
   }
+
+  // if (gameState === true) {
+  //   io.to(socket.id).emit('viewingGameInProgress', gameState);
+  // }
 
   socket.on('disconnect', (reason) => {
     console.log('disconnect', socket.id);
@@ -57,6 +62,7 @@ io.on('connection', function (socket) {
   //creates random number and determines which player goes first  
   socket.on('startTheGame', () => {
     console.log('starting the game', socket.id);
+    activeGame = true;
     let randomNumber = Math.floor(Math.random() * 10) + 1;
     if (randomNumber <= 5) {
       currentTurn.player = 'p1';
@@ -66,7 +72,6 @@ io.on('connection', function (socket) {
       currentTurn.player = 'p2';
       io.emit('changePlayerTurn', currentTurn);
     }
-
     gameState.forEach(state => {
       state.player = 0;
     })

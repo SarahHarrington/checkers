@@ -47,10 +47,6 @@ for (let i = 20; i <= 31; i++) {
 const playerOnePieces = [...document.querySelectorAll('.player-one-piece')];
 const playerTwoPieces = [...document.querySelectorAll('.player-two-piece')];
 
-socket.on('newClientConnection', (data) => {
-  console.log('a new client has connected', data);
-});
-
 socket.on('changePlayerTurn', serverTurn => {
   currentTurn.player = serverTurn.player;
   changeTurn(currentTurn.player);
@@ -79,14 +75,18 @@ socket.on('playerTwo', () => {
   playerDeclare.classList.add('playerDeclareP2');
 })
 
-socket.on('viewingGame', (gameState) => {
+socket.on('viewingGame', () => {
   playerDeclare.innerHTML = `You're spectating the current game!`;
-  // playerDeclare.classList.add('');
+})
+
+socket.on('viewingGameInProgress', (gameState) => {
+  playerDeclare.innerHTML = `You're spectating the current game!`;
   console.log(gameState);
   displayCurrentGameInProgress(gameState);
 })
 
 // ===================== FUNCTIONS =======================
+
 function dragStartHandler(e) {
   currentTurn.activePiece = e.target;
   if (isNaN(parseInt(e.target.parentElement.id))) {
@@ -176,32 +176,32 @@ function endOfTheTurn(serverTurn) {
 
 function displayCurrentGameInProgress(gameState) {
   console.log('in the update the thing page')
-  for (let i = 1; i < gameState.length; i++) {
-    console.log('in the loop', i);
-    console.log(boardSpaces[i]);
-    console.log(gameState[i].player);
-    if (gameState[i].player === 'p1') {
-      console.log('in the p1 if')
-      let playerOnePiece =  document.createElement('div');
-      playerOnePiece.classList.add('game-piece');
-      playerOnePiece.classList.add('player-one-piece');
-      playerOnePiece.setAttribute('id', 'p1');
-      boardSpaces[i].appendChild(playerOnePiece);
-      if (gameState.king === true) {
-        playerOnePiece.innerHTML = '<i class="fas fa-crown"></i>';
-        boardSpaces[i].appendChild(playerOnePiece);
-      }
-    }
-    else if (gameState[i].player === 'p2') {
-      let playerTwoPiece =  document.createElement('div');
-      playerTwoPiece.classList.add('game-piece');
-      playerTwoPiece.classList.add('player-two-piece');
-      playerTwoPiece.setAttribute('id', 'p2');
-      boardSpaces[i].appendChild(playerTwoPiece);
-      if (gameState.king === true) {
-        playerTwoPiece.innerHTML = '<i class="fas fa-crown"></i>';
-        boardSpaces[i].appendChild(playerTwoPiece);
-      }
-    }
-  }
+  // for (let i = 1; i < gameState.length; i++) {
+  //   console.log('in the loop', i);
+  //   console.log(boardSpaces[i]);
+  //   console.log(gameState[i].player);
+  //   if (gameState[i].player === 'p1') {
+  //     console.log('in the p1 if')
+  //     let playerOnePiece =  document.createElement('div');
+  //     playerOnePiece.classList.add('game-piece');
+  //     playerOnePiece.classList.add('player-one-piece');
+  //     playerOnePiece.setAttribute('id', 'p1');
+  //     boardSpaces[i].appendChild(playerOnePiece);
+  //     if (gameState.king === true) {
+  //       playerOnePiece.innerHTML = '<i class="fas fa-crown"></i>';
+  //       boardSpaces[i].appendChild(playerOnePiece);
+  //     }
+  //   }
+  //   else if (gameState[i].player === 'p2') {
+  //     let playerTwoPiece =  document.createElement('div');
+  //     playerTwoPiece.classList.add('game-piece');
+  //     playerTwoPiece.classList.add('player-two-piece');
+  //     playerTwoPiece.setAttribute('id', 'p2');
+  //     boardSpaces[i].appendChild(playerTwoPiece);
+  //     if (gameState.king === true) {
+  //       playerTwoPiece.innerHTML = '<i class="fas fa-crown"></i>';
+  //       boardSpaces[i].appendChild(playerTwoPiece);
+  //     }
+  //   }
+  // }
 }
