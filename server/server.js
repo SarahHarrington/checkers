@@ -42,16 +42,19 @@ io.on('connection', function (socket) {
     io.to(socket.id).emit('playerTwo');
     game.id = allGames.length + 1;
     allGames.push(game);
+
     game = {
       id: null,
       playerOne: null,
       playerTwo: null,
+      gameState: {},
     }
   }
 
   console.log(allGames);
 
-  //creates random number and determines which player goes first  
+  //creates random number and determines which player goes first 
+  //need to get back the game id and update the gamestate there? 
   socket.on('startTheGame', () => {
     console.log('starting the game', socket.id);
     activeGame = true;
