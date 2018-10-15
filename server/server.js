@@ -25,18 +25,34 @@ let currentTurn = {
 app.use(express.static(`${__dirname}/public`));
 
 io.on('connection', function (socket) {
+  
   console.log('a new client has connected', socket.id);
   if (playerOne === null) {
     playerOne = socket.id;
-    io.to(playerOne).emit('playerOne')
+    io.to(playerOne).emit('playerOne');
   }
   else if (playerTwo === null) {
     playerTwo = socket.id;
-    io.to(playerTwo).emit('playerTwo')
+    io.to(playerTwo).emit('playerTwo');
   }
   else {
     playerQueue.push({ id: socket.id });
+    io.to(socket.id).emit('viewingGame', gameState);
   }
+
+  socket.on('disconnect', (reason) => {
+    console.log('disconnect', socket.id);
+    if (socket.id === playerOne) {
+      playerOne === null;
+      console.log(playerOne);
+    }
+    else if (socket.id === playerTwo) {
+      playerTwo = null;
+      console.log(playerTwo)
+    } else {
+      console.log(playerQueue);
+    }
+  })
 
   //creates random number and determines which player goes first  
   socket.on('startTheGame', () => {

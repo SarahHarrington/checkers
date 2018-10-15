@@ -70,3 +70,15 @@
 .no-move {
   opacity: .5;
 }
+
+.playerDeclareP1 {
+  color: #139C9A;
+}
+
+.playerDeclareP2 {
+  color: #CB8153;
+}
+
+/* .playerDecloareSpectate {
+
+} */
