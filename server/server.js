@@ -28,7 +28,10 @@ app.use(express.static(`${__dirname}/public`));
 io.on('connection', function (socket) {
   
   console.log('a new client has connected', socket.id);
-  if (playerOne === null) {
+  if (activeGame === true) {
+    io.to(socket.id).emit('viewingGameInProgress', gameState);
+  }
+  else if (playerOne === null) {
     playerOne = socket.id;
     io.to(playerOne).emit('playerOne');
   }
@@ -45,19 +48,19 @@ io.on('connection', function (socket) {
   //   io.to(socket.id).emit('viewingGameInProgress', gameState);
   // }
 
-  socket.on('disconnect', (reason) => {
-    console.log('disconnect', socket.id);
-    if (socket.id === playerOne) {
-      playerOne === null;
-      console.log(playerOne);
-    }
-    else if (socket.id === playerTwo) {
-      playerTwo = null;
-      console.log(playerTwo)
-    } else {
-      console.log(playerQueue);
-    }
-  })
+  // socket.on('disconnect', (reason) => {
+  //   console.log('disconnect', socket.id);
+  //   if (socket.id === playerOne) {
+  //     playerOne === null;
+  //     console.log(playerOne);
+  //   }
+  //   else if (socket.id === playerTwo) {
+  //     playerTwo = null;
+  //     console.log(playerTwo)
+  //   } else {
+  //     console.log(playerQueue);
+  //   }
+  // })
 
   //creates random number and determines which player goes first  
   socket.on('startTheGame', () => {
@@ -86,8 +89,8 @@ io.on('connection', function (socket) {
   })
 
   socket.on('checkIfValidMove', clientTurn => {
-    if (socket.id === playerOne || socket.id === playerTwo) {
-      console.log(socket.id);
+    if ((clientTurn.player === 'p1' && socket.id === playerOne) || (clientTurn.player === 'p2' && socket.id === playerTwo)) {
+      console.log('valid move id', socket.id);
       //sends invalid message back to the client
       if (gameState[clientTurn.endSpace].player !== 0) {
         io.emit('invalidMove');
