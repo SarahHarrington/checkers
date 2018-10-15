@@ -7,11 +7,13 @@ var io = require('socket.io')(server);
 const validMoves = require('./modules/valid_moves.js');
 let gameState = require('./modules/game_state.js');
 
-let playerOne = null;
-let playerTwo = null;
+let game = {
+  id: null,
+  playerOne: null,
+  playerTwo: null,
+}
 
-let playerQueue = [];
-let activeGame = false;
+let allGames = [];
 
 let currentTurn = {
   player: null, //currently tracking the piece type for player
@@ -26,38 +28,28 @@ let currentTurn = {
 app.use(express.static(`${__dirname}/public`));
 
 io.on('connection', function (socket) {
-  
+  io.emit('aNewClientConnection', socket.id);
+
   console.log('a new client has connected', socket.id);
-  if (playerOne === null) {
-    playerOne = socket.id;
-    io.to(playerOne).emit('playerOne');
+  console.log('game', game)
+  if (game.playerOne === null) {
+    game.playerOne = socket.id;
+    io.to(socket.id).emit('playerOne');
+    console.log(game);
   }
-  else if (playerTwo === null) {
-    playerTwo = socket.id;
-    io.to(playerTwo).emit('playerTwo');
-  }
-  else {
-    playerQueue.push({ id: socket.id });
-    io.to(socket.id).emit('viewingGame');
+  else if (game.playerTwo === null) {
+    game.playerTwo = socket.id;
+    io.to(socket.id).emit('playerTwo');
+    game.id = allGames.length + 1;
+    allGames.push(game);
+    game = {
+      id: null,
+      playerOne: null,
+      playerTwo: null,
+    }
   }
 
-  // if (gameState === true) {
-  //   io.to(socket.id).emit('viewingGameInProgress', gameState);
-  // }
-
-  socket.on('disconnect', (reason) => {
-    console.log('disconnect', socket.id);
-    if (socket.id === playerOne) {
-      playerOne === null;
-      console.log(playerOne);
-    }
-    else if (socket.id === playerTwo) {
-      playerTwo = null;
-      console.log(playerTwo)
-    } else {
-      console.log(playerQueue);
-    }
-  })
+  console.log(allGames);
 
   //creates random number and determines which player goes first  
   socket.on('startTheGame', () => {

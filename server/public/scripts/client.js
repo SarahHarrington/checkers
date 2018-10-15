@@ -47,6 +47,10 @@ for (let i = 20; i <= 31; i++) {
 const playerOnePieces = [...document.querySelectorAll('.player-one-piece')];
 const playerTwoPieces = [...document.querySelectorAll('.player-two-piece')];
 
+socket.on('aNewClientConnection', (id) => {
+  console.log(id);
+})
+
 socket.on('changePlayerTurn', serverTurn => {
   currentTurn.player = serverTurn.player;
   changeTurn(currentTurn.player);
