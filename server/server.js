@@ -82,8 +82,7 @@ io.on('connection', function (socket) {
     let gameID = allGames.filter(game => game.id.includes(socketID));
     let gameIndex = allGames.findIndex(game => game.id === gameID[0].id);
     console.log('find game id', socketID);
-    console.log('gameID', gameID)
-    console.log('gameIndex', gameIndex);
+    console.log('gameState', allGames[gameIndex].state);
     return gameIndex;
   }
 
@@ -98,7 +97,7 @@ io.on('connection', function (socket) {
       }
       //manages movement of kinged pieces
       if (allGames[gameIndex].state[clientTurn.startSpace].king === true) {
-        kingmoves(allGames[gameIndex], clientTurn);
+        kingmoves(gameIndex, clientTurn);
       }
       else {
         let possibleMoves = validMoves[clientTurn.startSpace];
@@ -228,19 +227,19 @@ function kingmoves(gameIndex, clientTurn) {
     endOfTheTurn(gameIndex);
   }
   if (forwardJump.length > 0) {
-    checkForKingJumps(clientTurn, forwardCheckingPieceJumped, forwardNextPossibleMoves, forwardPossibleJumpedSpaces);
+    checkForKingJumps(gameIndex, clientTurn, forwardCheckingPieceJumped, forwardNextPossibleMoves, forwardPossibleJumpedSpaces);
   }
   if (rearJump.length > 0) {
-    checkForKingJumps(clientTurn, rearCheckingPieceJumped, rearNextPossibleMoves, rearPossibleJumpedSpaces);
+    checkForKingJumps(gameIndex, clientTurn, rearCheckingPieceJumped, rearNextPossibleMoves, rearPossibleJumpedSpaces);
   }
 }
 
 /***************** CHECK FOR ADDITIONAL JUMPS *******************/
 function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces) {
-  let leftMove = gameState[nextPossibleMoves[0]].player;
-  let rightMove = gameState[nextPossibleMoves[1]].player;
-  let leftJumpedSpace = gameState[possibleJumpedSpaces[0]].player;
-  let rightJumpedSpace = gameState[possibleJumpedSpaces[1]].player;
+  let leftMove = allGames[gameIndex].state[nextPossibleMoves[0]].player;
+  let rightMove = allGames[gameIndex].state[nextPossibleMoves[1]].player;
+  let leftJumpedSpace = allGames[gameIndex].state[possibleJumpedSpaces[0]].player;
+  let rightJumpedSpace = allGames[gameIndex].state[possibleJumpedSpaces[1]].player;
   let leftrightstate = ((leftMove === 0) ? 1 : 0) + ((rightMove === 0) ? 2 : 0);
   switch (leftrightstate) {
     case 0:
@@ -294,22 +293,22 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
   }
 }
 
-function checkForKingJumps(clientTurn, checkingPieceJumped, nextPossibleMoves, possibleJumpedSpaces) {
+function checkForKingJumps(gameIndex, clientTurn, checkingPieceJumped, nextPossibleMoves, possibleJumpedSpaces) {
   currentTurn.jump = true;
   currentTurn.jumpSpace = checkingPieceJumped;
   //updates the gamestate
-  gameState[clientTurn.startSpace].player = 0;
-  gameState[clientTurn.startSpace].king = false;
-  gameState[clientTurn.endSpace].player = currentTurn.player;
-  gameState[clientTurn.endSpace].king = true;
-  gameState[checkingPieceJumped].player = 0;
+  allGames[gameIndex].state[clientTurn.startSpace].player = 0;
+  allGames[gameIndex].state[clientTurn.startSpace].king = false;
+  allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+  allGames[gameIndex].state[clientTurn.endSpace].king = true;
+  allGames[gameIndex].state[checkingPieceJumped].player = 0;
 
   //check for additional jumps
   if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
-    endOfTheTurn();
+    endOfTheTurn(gameIndex);
   }
   else {
-    checkForAdditionalJumps(nextPossibleMoves, possibleJumpedSpaces);
+    checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces);
   }
 }
 
