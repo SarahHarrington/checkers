@@ -51,6 +51,10 @@ socket.on('aNewClientConnection', (id) => {
   console.log(id);
 })
 
+socket.on('disconnect', () => {
+  console.log('this socket disconnected', socket.id)
+})
+
 socket.on('changePlayerTurn', serverTurn => {
   currentTurn.player = serverTurn.player;
   changeTurn(currentTurn.player);
@@ -69,12 +73,14 @@ socket.on('endOfTheTurn', serverTurn => {
   endOfTheTurn(serverTurn);
 })
 
-socket.on('playerOne', () => {
+socket.on('playerOne', (gameID) => {
+  console.log('p1 game ID', gameID)
   playerDeclare.innerHTML = `You are player one!`;
   playerDeclare.classList.add('playerDeclareP1');
 })
 
-socket.on('playerTwo', () => {
+socket.on('playerTwo', (gameID) => {
+  console.log('p2 game ID', gameID)
   playerDeclare.innerHTML = `You are player two!`;
   playerDeclare.classList.add('playerDeclareP2');
 })
