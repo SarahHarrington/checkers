@@ -66,30 +66,24 @@ io.on('connection', function (socket) {
 
     // console.log('the game', gameID)
     activeGame = true;
+    console.log('*******the current game', allGames[gameIndex]);
     let randomNumber = Math.floor(Math.random() * 10) + 1;
     if (randomNumber <= 5) {
-      currentTurn.player = 'p1';
-      io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', currentTurn);
+      allGames[gameIndex].currentTurn.player = 'p1';
+      io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', allGames[gameIndex].currentTurn);
     }
     if (randomNumber >= 6) {
-      currentTurn.player = 'p2';
-      io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', currentTurn);
+      allGames[gameIndex].currentTurn.player = 'p2';
+      io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', allGames[gameIndex].currentTurn);
     }
   })
-
-  function findGame(socketID) {
-    let gameID = allGames.filter(game => game.id.includes(socketID));
-    let gameIndex = allGames.findIndex(game => game.id === gameID[0].id);
-    console.log('find game id', socketID);
-    console.log('gameState', allGames[gameIndex].state);
-    return gameIndex;
-  }
 
   socket.on('checkIfValidMove', (clientTurn) => {
     let gameIndex = findGame(socket.id);
     if (socket.id === allGames[gameIndex].playerOne || socket.id === allGames[gameIndex].playerTwo) {
       //sends invalid message back to the client
       if (allGames[gameIndex].state[clientTurn.endSpace].player !== 0) {
+        console.log('initial invalid')
         io.to(socket.id).emit('invalidMove');
       }
 
@@ -113,14 +107,14 @@ io.on('connection', function (socket) {
           if (forward.length > 0) {
             if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
               allGames[gameIndex].currentTurn.king = true;
-              allGames[gameIndex].state[currentTurn.endSpace].king = true;
+              allGames[gameIndex].state[clientTurn.endSpace].king = true;
               allGames[gameIndex].state[clientTurn.startSpace].player = 0;
-              allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+              allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
               endOfTheTurn(gameIndex);
             }
             else {
               allGames[gameIndex].state[clientTurn.startSpace].player = 0;
-              allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+              allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
               endOfTheTurn(gameIndex);
             }
           }
@@ -135,7 +129,7 @@ io.on('connection', function (socket) {
               allGames[gameIndex].currentTurn.jump = true;
               allGames[gameIndex].currentTurn.jumpSpace = checkingPieceJumped;
               allGames[gameIndex].state[clientTurn.startSpace].player = 0;
-              allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+              allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
               allGames[gameIndex].state[checkingPieceJumped].player = 0;
               let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
               let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
@@ -147,6 +141,7 @@ io.on('connection', function (socket) {
               }
             }
             else {
+              console.log('p1 invalid')
               io.to(socket.id).emit('invalidMove');
             }
           }
@@ -155,29 +150,29 @@ io.on('connection', function (socket) {
           if (rear.length > 0) {
             if (allGames[gameIndex].currentTurn.endSpace === '1' || allGames[gameIndex].currentTurn.endSpace === '2' || allGames[gameIndex].currentTurn.endSpace === '3' || allGames[gameIndex].currentTurn.endSpace === '4') {
               allGames[gameIndex].currentTurn.king = true;
-              allGames[gameIndex].state[currentTurn.endSpace].king = true;
+              allGames[gameIndex].state[clientTurn.endSpace].king = true;
               allGames[gameIndex].state[clientTurn.startSpace].player = 0;
-              allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+              allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
               endOfTheTurn(gameIndex);
             }
             else {
               allGames[gameIndex].state[clientTurn.startSpace].player = 0;
-              allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+              allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
               endOfTheTurn(gameIndex);
             }
           }
           if (rearJump.length > 0) {
             if (allGames[gameIndex].currentTurn.endSpace === '1' || allGames[gameIndex].currentTurn.endSpace === '2' || allGames[gameIndex].currentTurn.endSpace === '3' || allGames[gameIndex].currentTurn.endSpace === '4') {
               allGames[gameIndex].currentTurn.king = true;
-              allGames[gameIndex].state[currentTurn.endSpace].king = true;
+              allGames[gameIndex].state[clientTurn.endSpace].king = true;
             }
             let jumpToSpaceIndex = possibleMoves.rj.indexOf(parseInt(clientTurn.endSpace));
             let checkingPieceJumped = possibleMoves.r[jumpToSpaceIndex];
             if (allGames[gameIndex].state[checkingPieceJumped].player === 'p1') {
               allGames[gameIndex].currentTurn.jump = true;
-              currallGames[gameIndex].currentTurnentTurn.jumpSpace = checkingPieceJumped;
+              allGames[gameIndex].currentTurn.jumpSpace = checkingPieceJumped;
               allGames[gameIndex].state[clientTurn.startSpace].player = 0;
-              allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+              allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
               let nextPossibleMoves = validMoves[clientTurn.endSpace].rj;
               let possibleJumpedSpaces = validMoves[clientTurn.endSpace].r;
               if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
@@ -188,6 +183,7 @@ io.on('connection', function (socket) {
               }
             }
             else {
+              console.log('p2 invalid')
               io.to(socket.id).emit('invalidMove');
             }
           }
@@ -198,6 +194,15 @@ io.on('connection', function (socket) {
     }
   })
 })
+
+/*********** FINDS THE GAME **********/
+function findGame(socketID) {
+  let gameID = allGames.filter(game => game.id.includes(socketID));
+  let gameIndex = allGames.findIndex(game => game.id === gameID[0].id);
+  console.log('find game id', socketID);
+  console.log('gameState', allGames[gameIndex].state);
+  return gameIndex;
+}
 
 function kingmoves(gameIndex, clientTurn) {
   let possibleMoves = validMoves[clientTurn.startSpace];
@@ -221,7 +226,7 @@ function kingmoves(gameIndex, clientTurn) {
   if (forward.length > 0 || rear.length > 0) {
     allGames[gameIndex].state[clientTurn.startSpace].player = 0;
     allGames[gameIndex].state[clientTurn.startSpace].king = false;
-    allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+    allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
     allGames[gameIndex].state[clientTurn.endSpace].king = true;
     endOfTheTurn(gameIndex);
   }
@@ -249,10 +254,10 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
     case 1:
       //LEFT IS VALID
       if (allGames[gameIndex].currentTurn.player === 'p1' && leftJumpedSpace === 'p2') {
-        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', currentTurn)
+        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', allGames[gameIndex].currentTurn)
       }
       else if (allGames[gameIndex].currentTurn.player === 'p2' && leftJumpedSpace === 'p1') {
-        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', currentTurn)
+        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', allGames[gameIndex].currentTurn)
       }
       else {
         endOfTheTurn(gameIndex);
@@ -262,11 +267,11 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
     case 2:
       //RIGHT IS VALID MOVE
       if (allGames[gameIndex].currentTurn.player === 'p1' && rightJumpedSpace === 'p2') {
-        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', currentTurn)
+        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', allGames[gameIndex].currentTurn)
         allGames[gameIndex].currentTurn.jump = false;
       }
       else if (allGames[gameIndex].currentTurn.player === 'p2' && rightJumpedSpace === 'p1') {
-        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', currentTurn)
+        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', allGames[gameIndex].currentTurn)
         allGames[gameIndex].currentTurn.jump = false;
       }
       else {
@@ -277,7 +282,7 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
     case 3:
       //both could be valid;
       if (allGames[gameIndex].currentTurn.player === 'p1' && leftJumpedSpace === 'p2' || allGames[gameIndex].currentTurn.player === 'p1' && rightJumpedSpace === 'p2') {
-        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', currentTurn)
+        io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', allGames[gameIndex].currentTurn)
       }
       else if (allGames[gameIndex].currentTurn.player === 'p2' && leftJumpedSpace === 'p1' || allGames[gameIndex].currentTurn.player === 'p2' && rightJumpedSpace === 'p1') {
         io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('updateBoard', currentTurn)
@@ -298,7 +303,7 @@ function checkForKingJumps(gameIndex, clientTurn, checkingPieceJumped, nextPossi
   //updates the gamestate
   allGames[gameIndex].state[clientTurn.startSpace].player = 0;
   allGames[gameIndex].state[clientTurn.startSpace].king = false;
-  allGames[gameIndex].state[clientTurn.endSpace].player = currentTurn.player;
+  allGames[gameIndex].state[clientTurn.endSpace].player = allGames[gameIndex].currentTurn.player;
   allGames[gameIndex].state[clientTurn.endSpace].king = true;
   allGames[gameIndex].state[checkingPieceJumped].player = 0;
 
@@ -313,16 +318,16 @@ function checkForKingJumps(gameIndex, clientTurn, checkingPieceJumped, nextPossi
 
 function endOfTheTurn(gameIndex) {
   //ADD SOMETHING TO CHECK IF GAME IS DONE FIRST?
-  io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('endOfTheTurn', currentTurn);
+  io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('endOfTheTurn', allGames[gameIndex].currentTurn);
   if (allGames[gameIndex].currentTurn.player === 'p1') {
     allGames[gameIndex].currentTurn.player = 'p2';
-    io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', currentTurn);
+    io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', allGames[gameIndex].currentTurn);
     allGames[gameIndex].currentTurn.jump = false;
     allGames[gameIndex].currentTurn.king = false;
   }
   else if (allGames[gameIndex].currentTurn.player === 'p2') {
     allGames[gameIndex].currentTurn.player = 'p1';
-    io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', currentTurn);
+    io.to(allGames[gameIndex].playerOne).to(allGames[gameIndex].playerTwo).emit('changePlayerTurn', allGames[gameIndex].currentTurn);
     allGames[gameIndex].currentTurn.jump = false;
     allGames[gameIndex].currentTurn.king = false;
   }
