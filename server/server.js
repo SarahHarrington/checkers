@@ -30,6 +30,7 @@ io.on('connection', function (socket) {
   }
   else if (game.playerTwo === null) {
     game.playerTwo = socket.id;
+    io.to(game.id).emit('playerHasJoined');
     game.id = game.id + socket.id;
     io.to(socket.id).emit('playerTwo', game.id);
   }
@@ -69,6 +70,7 @@ io.on('connection', function (socket) {
     if (socket.id === currentGame.playerOne || socket.id === currentGame.playerTwo) {
       //sends invalid message back to the client
       if (currentGame.state[clientTurn.endSpace].player !== 0) {
+        console.log('iniital invalid');
         io.to(socket.id).emit('invalidMove');
       }
 
@@ -126,8 +128,12 @@ io.on('connection', function (socket) {
               }
             }
             else {
+              console.log('invalid move player one')
               io.to(socket.id).emit('invalidMove');
             }
+          }
+          if (rear.length > 0 || rearJump.length > 0) {
+            io.to(socket.id).emit('invalidMove');
           }
         }
         if (clientTurn.player === 'p2') {
@@ -167,14 +173,15 @@ io.on('connection', function (socket) {
                 checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces);
               }
             }
-            else {
-              io.to(socket.id).emit('invalidMove');
-            }
+          }
+          if (forward.length > 0 || forwardJump.length > 0) {
+            io.to(socket.id).emit('invalidMove');
           }
         }
       }
     } else {
       console.log('Cannot go')
+      io.to(socket.id).emit('invalidMove');
     }
   })
 })

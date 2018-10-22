@@ -111,21 +111,19 @@
     <div class="player-side" id="p2-side">Player Two</div>
 
     <div class="side-panel">
-      <div>
+      <div class="button-holder">
         <button id='start-game'>Start Game!</button>
-      </div>
-      <div>
         <button>End Game</button>
       </div>
-      <div class="playerDeclare">You are player: {}</div>
-      <div id="current-turn">Current Player</div>
+      <div class="playerDeclare"></div>
+      <div>Current Player<span id="current-turn"></span></div>
       <div class="captured-pieces">Stored Pieces</div>
       <div id="0"></div>
       <div class="chat-area">
-        <div>Chat Area</div>
-        <div>Display for Text</div>
-        <div>Input for the text</div>
-        <div>Send Mechanism</div>
+        <div id="chat-area">Chat Area</div>
+        <div class="chat-display">Display for Text</div>
+        <div><input type="text"></div>
+        <div><button>Send</button></div>
       </div>
     </div>
   </div>

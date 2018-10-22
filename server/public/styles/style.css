@@ -24,16 +24,19 @@ body {
 }
 
 .game-message {
-  grid-column: 1;
+  grid-column: 1 / -1;
   height: 5vh;
   margin-left: 2vw;
+  text-align: center;
+  margin-left: 2vw;
+  padding-top: 2vh;
 }
 
 .player-side {
   grid-column: 1;
   margin-left: 2vw;
   font-size: 5vh;
-  width: 80vh;
+  width: 70vh;
   text-align: center;
 }
 
@@ -47,27 +50,32 @@ body {
 
 .glow {
   -webkit-animation-duration: 1s;
-        -webkit-animation-name: glow;
-        -webkit-animation-direction: alternate;
-        -webkit-animation-iteration-count: infinite;
-        animation-duration: 1s;
-        animation-name: glow;
-        animation-direction: alternate;
-        animation-iteration-count: infinite;
+  -webkit-animation-name: glow;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-iteration-count: infinite;
+  animation-duration: 1s;
+  animation-name: glow;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
 }
 
 @keyframes glow {
-  from { text-shadow: 0 0 0px #EDF2F4; }
-  to { text-shadow: 0 0 8px #EDF2F4; }
+  from { text-shadow: 0 0 0px #787986; }
+  to { text-shadow: 0 0 8px #787986; }
 }
 
-
+.fade-out {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 2s, opacity 2s linear;
+}
 
 .game-board {
   grid-column: 1;
   display: grid;
   grid-template-rows: repeat(8, 1fr);
   border: 10px solid #14151E;
+  border-radius: 3px;
   height: 70vh;
   width: 70vh;
   background-color: #EDF2F4;
@@ -96,6 +104,21 @@ body {
   align-self: start;
   grid-column: 2;
   grid-row: 4;
+  margin-right: 2vw;
+}
+
+.button-holder {
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+}
+
+button {
+  border-radius: 3px;
+  border: none;
+  background-color: #14151E;
+  color: #EDF2F4;
+  height: 5vh;
+  width: 10vh;
 }
 
 .player-one-piece {
@@ -144,9 +167,11 @@ body {
 }
 
 .chat-area {
+  margin-top: 5vh;
   border: solid 1px #EDF2F4;
 }
 
-/* .playerDecloareSpectate {
-
-} */
+.chat-display {
+  height: 30vh;
+  background-color: #EDF2F4;
+}

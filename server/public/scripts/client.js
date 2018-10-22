@@ -54,6 +54,10 @@ socket.on('aNewClientConnection', (id) => {
   console.log(id);
 })
 
+socket.on('playerHasJoined', () => {
+  gameMessageDisplay.innerHTML = 'Another player has joined the game!';
+})
+
 socket.on('disconnect', () => {
   console.log('this socket disconnected', socket.id)
 })
@@ -69,7 +73,9 @@ socket.on('updateBoard', serverTurn => {
 
 socket.on('invalidMove', () => {
   console.log('that move is invalid');
+  gameMessageDisplay.classList.remove('fade-out');
   gameMessageDisplay.innerHTML = 'That move is not valid';
+  setTimeout(clearMessage, 4000);
 })
 
 socket.on('endOfTheTurn', serverTurn => {
@@ -77,7 +83,8 @@ socket.on('endOfTheTurn', serverTurn => {
 })
 
 socket.on('playerOne', (gameID) => {
-  console.log('p1 game ID', gameID)
+  console.log('p1 game ID', gameID);
+  gameMessageDisplay.innerHTML = 'You are the only player in this game.';
   playerDeclare.innerHTML = `You are player one!`;
   playerDeclare.classList.add('playerDeclareP1');
 })
@@ -109,11 +116,17 @@ function dropHandler(e) {
   currentTurn.endSpace = e.target.id;
   e.preventDefault();
   if (currentTurn.endSpace === 'p1' || currentTurn.endSpace === 'p2') {
+    gameMessageDisplay.innerHTML = 'That move is not valid';
+    setTimeout(clearMessage, 4000);
     return;
   }
   else {
     socket.emit('checkIfValidMove', currentTurn);
   }
+}
+
+function clearMessage() {
+  gameMessageDisplay.classList.add('fade-out');
 }
 
 //starts the game when button clicked
