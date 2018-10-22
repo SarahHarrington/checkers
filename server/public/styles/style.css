@@ -1,25 +1,77 @@
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #14151e;
+}
+
 .container {
   display: grid;
   grid-template-columns: 80vw 20vw;
   align-items: center;
-  /* justify-items: center; */
+  color: white;
+  background-color: #2B2D42;
 }
 
 .header {
   grid-column: 1 / -1;
+  background-color: #14151E;
+  color: #EDF2F4;
+  height: 7vh;
+  font-family: 'Monoton', cursive;
+  text-align: center;
+  font-size: 6vh;
+  border-bottom: .2vh solid #EDF2F4;
 }
 
 .game-message {
-  grid-column: 1 / -1;
+  grid-column: 1;
   height: 5vh;
+  margin-left: 2vw;
 }
 
+.player-side {
+  grid-column: 1;
+  margin-left: 2vw;
+  font-size: 5vh;
+  width: 80vh;
+  text-align: center;
+}
+
+#p1-side {
+  color: #139C9A;
+}
+
+#p2-side {
+  color: #CB8153;
+}
+
+.glow {
+  -webkit-animation-duration: 1s;
+        -webkit-animation-name: glow;
+        -webkit-animation-direction: alternate;
+        -webkit-animation-iteration-count: infinite;
+        animation-duration: 1s;
+        animation-name: glow;
+        animation-direction: alternate;
+        animation-iteration-count: infinite;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 0px #EDF2F4; }
+  to { text-shadow: 0 0 8px #EDF2F4; }
+}
+
+
+
 .game-board {
+  grid-column: 1;
   display: grid;
   grid-template-rows: repeat(8, 1fr);
   border: 10px solid #14151E;
-  height: 80vh;
-  width: 80vh
+  height: 70vh;
+  width: 70vh;
+  background-color: #EDF2F4;
+  margin-left: 2vw;
 }
 
 .board-row {
@@ -28,7 +80,9 @@
 }
 
 .playable {
-  background-color: #2B2D42;
+  /* background-color: #2B2D42; */
+  background-color: #14151e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%232b2d42' fill-opacity='0.74' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
 }
 
 .board-space {
@@ -40,11 +94,13 @@
 
 .side-panel {
   align-self: start;
+  grid-column: 2;
+  grid-row: 4;
 }
 
 .player-one-piece {
   background-color: #17BEBB;
-  border: 2px solid #139C9A;
+  border: 3px solid #139C9A;
   border-radius: 50%;
   height: 70%;
   width: 70%;
@@ -53,7 +109,7 @@
 
 .player-two-piece {
   background-color: #F79D65;
-  border: 2px solid #CB8153;
+  border: 3px solid #CB8153;
   border-radius: 50%;
   height: 70%;
   width: 70%;
@@ -62,9 +118,17 @@
 
 .fa-crown {
   color: white;
-  padding-top: 50%;
-  padding-left: 50%;
-  font-size: 1rem;
+  padding-top: 1vh;
+  padding-left: .5vh;
+  font-size: 4vh;
+}
+
+.p1 {
+  color: #139C9A;
+}
+
+.p2 {
+  color: #CB8153;
 }
 
 .no-move {
@@ -77,6 +141,10 @@
 
 .playerDeclareP2 {
   color: #CB8153;
+}
+
+.chat-area {
+  border: solid 1px #EDF2F4;
 }
 
 /* .playerDecloareSpectate {

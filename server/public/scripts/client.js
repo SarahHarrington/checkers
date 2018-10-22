@@ -9,6 +9,9 @@ const gameMessageDisplay = document.querySelector('.game-message');
 const startGameButton = document.getElementById('start-game').addEventListener('click', startTheGame);
 const currentPlayerDisplay = document.getElementById('current-turn');
 const playerDeclare = document.querySelector('.playerDeclare');
+const playerOneGlow = document.querySelector('#p1-side');
+const playerTwoGlow = document.querySelector('#p2-side');
+
 
 let currentTurn = {
   player: null, //currently tracking the piece type for player
@@ -47,6 +50,14 @@ for (let i = 20; i <= 31; i++) {
 const playerOnePieces = [...document.querySelectorAll('.player-one-piece')];
 const playerTwoPieces = [...document.querySelectorAll('.player-two-piece')];
 
+socket.on('aNewClientConnection', (id) => {
+  console.log(id);
+})
+
+socket.on('disconnect', () => {
+  console.log('this socket disconnected', socket.id)
+})
+
 socket.on('changePlayerTurn', serverTurn => {
   currentTurn.player = serverTurn.player;
   changeTurn(currentTurn.player);
@@ -58,36 +69,29 @@ socket.on('updateBoard', serverTurn => {
 
 socket.on('invalidMove', () => {
   console.log('that move is invalid');
+  gameMessageDisplay.innerHTML = 'That move is not valid';
 })
 
 socket.on('endOfTheTurn', serverTurn => {
-  console.log('server Turn', serverTurn);
   endOfTheTurn(serverTurn);
 })
 
-socket.on('playerOne', () => {
+socket.on('playerOne', (gameID) => {
+  console.log('p1 game ID', gameID)
   playerDeclare.innerHTML = `You are player one!`;
   playerDeclare.classList.add('playerDeclareP1');
 })
 
-socket.on('playerTwo', () => {
+socket.on('playerTwo', (gameID) => {
+  console.log('p2 game ID', gameID)
   playerDeclare.innerHTML = `You are player two!`;
   playerDeclare.classList.add('playerDeclareP2');
-})
-
-socket.on('viewingGame', () => {
-  playerDeclare.innerHTML = `You're spectating the current game!`;
-})
-
-socket.on('viewingGameInProgress', (gameState) => {
-  playerDeclare.innerHTML = `You're spectating the current game!`;
-  console.log(gameState);
-  displayCurrentGameInProgress(gameState);
 })
 
 // ===================== FUNCTIONS =======================
 
 function dragStartHandler(e) {
+  e.dataTransfer.setData("html", e.target.id);
   currentTurn.activePiece = e.target;
   if (isNaN(parseInt(e.target.parentElement.id))) {
     currentTurn.startSpace = e.target.parentElement.parentElement.id;
@@ -103,10 +107,8 @@ function dragoverHandler(e) {
 
 function dropHandler(e) {
   currentTurn.endSpace = e.target.id;
-  console.log('in the drop handler', currentTurn);
   e.preventDefault();
   if (currentTurn.endSpace === 'p1' || currentTurn.endSpace === 'p2') {
-    console.log('in the drop if')
     return;
   }
   else {
@@ -129,6 +131,8 @@ function updateBoard(serverTurn) {
 //Changes the pieces to draggable based on the player turn
 function changeTurn(playerTurn) {
   if (playerTurn === 'p1') {
+    playerTwoGlow.classList.remove('glow');
+    playerOneGlow.classList.add('glow');
     console.log('player 1 turn -------------------------------');
     playerOnePieces.forEach (piece => {
       piece.setAttribute('draggable', true);
@@ -141,6 +145,8 @@ function changeTurn(playerTurn) {
     currentPlayerDisplay.innerHTML = '<p>Player 1 Go!</p>'
   }
   if (playerTurn === 'p2') {
+    playerTwoGlow.classList.add('glow');
+    playerOneGlow.classList.remove('glow');
     console.log('player 2 turn ----------------------------');
     playerTwoPieces.forEach (piece => {
       piece.setAttribute('draggable', true);
@@ -155,24 +161,26 @@ function changeTurn(playerTurn) {
 }
 
 function endOfTheTurn(serverTurn) {
-  console.log(serverTurn);
   let activePiece = document.getElementById(serverTurn.startSpace).firstChild;;
   if (serverTurn.jump === true) {
-    console.log('do the jump')
-    console.log('jumpSpace', serverTurn.jumpSpace);
     document.getElementById(serverTurn.endSpace).appendChild(activePiece);
     let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
     document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
   }
   if (serverTurn.king === true) {
-    console.log('figure out how to add king class?');
-    document.getElementById(serverTurn.endSpace).appendChild(activePiece);
-    activePiece.innerHTML = '<i class="fas fa-crown"></i>';
+    if (serverTurn.player === 'p1') {
+      document.getElementById(serverTurn.endSpace).appendChild(activePiece);
+      activePiece.innerHTML = '<i class="fas fa-crown p1"></i>';
+    }
+    if (serverTurn.player === 'p2') {
+      document.getElementById(serverTurn.endSpace).appendChild(activePiece);
+      activePiece.innerHTML = '<i class="fas fa-crown p2"></i>';
+    }
   } else {
-    console.log(currentTurn.activePiece);
     document.getElementById(serverTurn.endSpace).appendChild(activePiece);
   }
 }
+<<<<<<< HEAD
 
 function displayCurrentGameInProgress(gameState) {
   boardSpaces.forEach(space => {
@@ -209,3 +217,5 @@ function displayCurrentGameInProgress(gameState) {
     }
   }
 }
+=======
+>>>>>>> rooms
