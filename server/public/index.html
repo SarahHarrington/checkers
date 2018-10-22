@@ -6,7 +6,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Checkers</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+    crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Monoton|Roboto" rel="stylesheet">
   <link rel="stylesheet" type="text/css" media="screen" href="styles/style.css" />
   <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -14,19 +16,20 @@
 <body>
   <div class="container">
     <header class="header">Checkers</header>
-    <div class="game-message"></div>
+    <div class="game-message">Game Message</div>
+    <div class="player-side" id="p1-side">Player One</div>
     <div class="game-board">
       <!-- Game Board-->
       <div class="board-row">
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-        </div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+      </div>
 
       <div class="board-row">
         <div class="board-space playable"></div>
@@ -40,15 +43,15 @@
       </div>
 
       <div class="board-row">
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-        </div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+      </div>
 
       <div class="board-row">
         <div class="board-space playable"></div>
@@ -62,15 +65,15 @@
       </div>
 
       <div class="board-row">
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-        </div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+      </div>
 
       <div class="board-row">
         <div class="board-space playable"></div>
@@ -84,15 +87,15 @@
       </div>
 
       <div class="board-row">
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-          <div class="board-space"></div>
-          <div class="board-space playable"></div>
-        </div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+        <div class="board-space"></div>
+        <div class="board-space playable"></div>
+      </div>
 
       <div class="board-row">
         <div class="board-space playable"></div>
@@ -104,17 +107,28 @@
         <div class="board-space playable"></div>
         <div class="board-space"></div>
       </div>
+    </div <!-- END Game Board -->
+    <div class="player-side" id="p2-side">Player Two</div>
 
-    </div
-    <!-- END Game Board -->
     <div class="side-panel">
-      <div><button id='start-game'>Start Game!</button></div>
+      <div>
+        <button id='start-game'>Start Game!</button>
+      </div>
+      <div>
+        <button>End Game</button>
+      </div>
       <div class="playerDeclare">You are player: {}</div>
       <div id="current-turn">Current Player</div>
-
       <div class="captured-pieces">Stored Pieces</div>
       <div id="0"></div>
+      <div class="chat-area">
+        <div>Chat Area</div>
+        <div>Display for Text</div>
+        <div>Input for the text</div>
+        <div>Send Mechanism</div>
+      </div>
     </div>
+  </div>
   </div>
   <script src="/scripts/client.js"></script>
 
