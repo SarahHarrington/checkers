@@ -12,6 +12,9 @@ const playerDeclare = document.querySelector('.playerDeclare');
 const playerOneGlow = document.querySelector('#p1-side');
 const playerTwoGlow = document.querySelector('#p2-side');
 const endTheGameButton = document.querySelector('#end-game');
+const chatDisplay = document.querySelector('#chat-display');
+const chatMessage = document.querySelector('#chat-message');
+const chatSubmit = document.querySelector('#chat-submit');
 
 
 let currentTurn = {
@@ -94,6 +97,11 @@ socket.on('playerTwo', (gameID) => {
   console.log('p2 game ID', gameID)
   playerDeclare.innerHTML = `You are player two!`;
   playerDeclare.classList.add('playerDeclareP2');
+})
+
+socket.on('updateTheChat', (chatLog) => {
+  console.log('Chat log', chatLog);
+  updateChat(chatLog);
 })
 
 // ===================== FUNCTIONS =======================
@@ -203,5 +211,22 @@ function playersEndingTheGame() {
 
 }
 
+function sendChatMessage(e) {
+  e.preventDefault();
+  console.log(chatMessage.value);
+  socket.emit('newChatMessage', chatMessage.value);
+  chatMessage.value = '';
+}
+
+function updateChat(chatLog) {
+  chatDisplay.innerHTML = '';
+  chatLog.forEach(chat => {
+    let chatMessage = document.createElement('li');
+    chatMessage.innerHTML = `${chat.player}: ${chat.message}`;
+    chatDisplay.appendChild(chatMessage);
+  })
+}
+
 startGameButton.addEventListener('click', startTheGame);
 endTheGameButton.addEventListener('click', playersEndingTheGame);
+chatSubmit.addEventListener('click', sendChatMessage);

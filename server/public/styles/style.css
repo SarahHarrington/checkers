@@ -180,7 +180,11 @@ body {
   border: solid 1px #EDF2F4;
 }
 
-.chat-display {
+#chat-display {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
   height: 30vh;
   background-color: #EDF2F4;
+  color: #14151E;
 }

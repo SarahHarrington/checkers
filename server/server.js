@@ -12,7 +12,8 @@ let game = {
   playerOne: null,
   playerTwo: null,
   state: {},
-  currentTurn: {}
+  currentTurn: {},
+  chatLog: [],
 }
 
 let allGames = [];
@@ -40,13 +41,20 @@ io.on('connection', function (socket) {
       playerOne: null,
       playerTwo: null,
       gameState: {},
-      currentTurn: {}
+      currentTurn: {},
+      chatLog: [],
     }
   }
 
   socket.on('disconnect', (reason) => {
     console.log('disconnect reasons', reason);
   })
+
+  socket.on('newChatMessage', (message) => {
+    console.log(`${socket.id}, ${message}`);
+    chatMessage(socket.id, message);
+  })
+  
 
   //creates random number and determines which player goes first 
   socket.on('startTheGame', () => {
@@ -60,7 +68,8 @@ io.on('connection', function (socket) {
         playerOne: null,
         playerTwo: null,
         gameState: {},
-        currentTurn: {}
+        currentTurn: {},
+        chatLog: [],
       }
     }
 
@@ -337,6 +346,20 @@ function endOfTheTurn(gameIndex) {
     currentGame.currentTurn.jump = false;
     currentGame.currentTurn.king = false;
   }
+}
+
+function chatMessage(socketId, message) {
+  let gameIndex = findGame(socketId);
+  let currentGame = allGames[gameIndex];
+  
+  if (socketId === currentGame.playerOne) {
+    currentGame.chatLog.push({player: 'Player One', message: message});
+  }
+  if (socketId === currentGame.playerTwo) {
+    currentGame.chatLog.push({player: 'Player Two', message: message});
+  }
+
+  io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateTheChat', currentGame.chatLog);
 }
 
 server.listen(5000);
