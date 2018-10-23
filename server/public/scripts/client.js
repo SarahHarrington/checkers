@@ -6,11 +6,12 @@ const socket = io();
 const boardSpaces = [...document.querySelectorAll('.playable')];
 const capturedPieces = document.querySelector('.captured-pieces');
 const gameMessageDisplay = document.querySelector('.game-message');
-const startGameButton = document.getElementById('start-game').addEventListener('click', startTheGame);
+const startGameButton = document.getElementById('start-game');
 const currentPlayerDisplay = document.getElementById('current-turn');
 const playerDeclare = document.querySelector('.playerDeclare');
 const playerOneGlow = document.querySelector('#p1-side');
 const playerTwoGlow = document.querySelector('#p2-side');
+const endTheGameButton = document.querySelector('#end-game');
 
 
 let currentTurn = {
@@ -132,6 +133,10 @@ function clearMessage() {
 //starts the game when button clicked
 function startTheGame() {
   socket.emit('startTheGame');
+  startGameButton.classList.add('hide');
+  startGameButton.classList.remove('game-button');
+  endTheGameButton.classList.remove('hide');
+  endTheGameButton.classList.add('game-button');
 }
 
 //updates the board
@@ -193,3 +198,10 @@ function endOfTheTurn(serverTurn) {
     document.getElementById(serverTurn.endSpace).appendChild(activePiece);
   }
 }
+
+function playersEndingTheGame() {
+
+}
+
+startGameButton.addEventListener('click', startTheGame);
+endTheGameButton.addEventListener('click', playersEndingTheGame);

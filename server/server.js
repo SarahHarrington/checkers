@@ -33,14 +33,6 @@ io.on('connection', function (socket) {
     io.to(game.id).emit('playerHasJoined');
     game.id = game.id + socket.id;
     io.to(socket.id).emit('playerTwo', game.id);
-  }
-
-  socket.on('disconnect', (reason) => {
-    console.log('disconnect reasons', reason);
-  })
-
-  //creates random number and determines which player goes first 
-  socket.on('startTheGame', () => {
     game.state = gameState;
     allGames.push(game);
     game = {
@@ -50,8 +42,29 @@ io.on('connection', function (socket) {
       gameState: {},
       currentTurn: {}
     }
+  }
 
+  socket.on('disconnect', (reason) => {
+    console.log('disconnect reasons', reason);
+  })
+
+  //creates random number and determines which player goes first 
+  socket.on('startTheGame', () => {
     let gameIndex = findGame(socket.id);
+    console.log(`gameIndex ${gameIndex}`);
+    if (gameIndex === -1) {
+      game.state = gameState;
+      allGames.push(game);
+      game = {
+        id: null,
+        playerOne: null,
+        playerTwo: null,
+        gameState: {},
+        currentTurn: {}
+      }
+    }
+
+    gameIndex = findGame(socket.id);
     let currentGame = allGames[gameIndex];
     let randomNumber = Math.floor(Math.random() * 10) + 1;
     if (randomNumber <= 5) {

@@ -58,10 +58,15 @@ body {
   animation-direction: alternate;
   animation-iteration-count: infinite;
 }
-
+/* 
 @keyframes glow {
   from { text-shadow: 0 0 0px #787986; }
   to { text-shadow: 0 0 8px #787986; }
+} */
+
+@keyframes glow {
+  from { opactiy: 1; text-shadow: 0 0 0px #787986 }
+  to { opacity: 0.25; text-shadow: 0 0 8px #787986 }
 }
 
 .fade-out {
@@ -112,13 +117,17 @@ body {
   padding-bottom: 2vh;
 }
 
-button {
+.game-button {
   border-radius: 3px;
   border: none;
   background-color: #14151E;
   color: #EDF2F4;
   height: 5vh;
   width: 10vh;
+}
+
+.hide {
+  display: none;
 }
 
 .player-one-piece {
