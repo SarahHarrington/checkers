@@ -16,7 +16,6 @@ const chatDisplay = document.querySelector('#chat-display');
 const chatMessage = document.querySelector('#chat-message');
 const chatSubmit = document.querySelector('#chat-submit');
 
-
 let currentTurn = {
   player: null, //currently tracking the piece type for player
   startSpace: null, // the piece the drag start action happened on
@@ -211,9 +210,9 @@ function playersEndingTheGame() {
 
 }
 
+/***** CHAT FUNCTIONS *****/
 function sendChatMessage(e) {
   e.preventDefault();
-  console.log(chatMessage.value);
   socket.emit('newChatMessage', chatMessage.value);
   chatMessage.value = '';
 }
@@ -227,6 +226,15 @@ function updateChat(chatLog) {
   })
 }
 
+/***** KEEPS CONNECTION ALIVE FOR BROWSERS THAT TIME OUT *****/
+function keepConnectionAlive() {
+  setInterval(() => {
+    socket.emit('keepConnectionAlive');
+  }, 20000)
+}
+keepConnectionAlive();
+
+/***** EVENT LISTENERS *****/
 startGameButton.addEventListener('click', startTheGame);
 endTheGameButton.addEventListener('click', playersEndingTheGame);
 chatSubmit.addEventListener('click', sendChatMessage);
