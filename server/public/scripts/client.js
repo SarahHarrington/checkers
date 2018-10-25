@@ -58,7 +58,7 @@ socket.on('aNewClientConnection', (id) => {
 })
 
 socket.on('playerHasJoined', () => {
-  gameMessageDisplay.innerHTML = 'Another player has joined the game!';
+  chatDisplay.innerHTML = '<li>Player 2 has joined the game!</li>';
 })
 
 socket.on('disconnect', () => {
@@ -87,20 +87,25 @@ socket.on('endOfTheTurn', serverTurn => {
 
 socket.on('playerOne', (gameID) => {
   console.log('p1 game ID', gameID);
-  gameMessageDisplay.innerHTML = 'You are the only player in this game.';
-  playerDeclare.innerHTML = `You are player one!`;
+  playerDeclare.innerHTML = `player one!`;
   playerDeclare.classList.add('playerDeclareP1');
 })
 
 socket.on('playerTwo', (gameID) => {
   console.log('p2 game ID', gameID)
-  playerDeclare.innerHTML = `You are player two!`;
+  playerDeclare.innerHTML = `player two!`;
   playerDeclare.classList.add('playerDeclareP2');
 })
 
 socket.on('updateTheChat', (chatLog) => {
   console.log('Chat log', chatLog);
   updateChat(chatLog);
+})
+
+socket.on('noOneHasJoinedGame', () => {
+  console.log('no one has joined the game')
+  chatDisplay.innerHTML = 'No one has joined the game.';
+  setTimeout(clearMessage, 4000);
 })
 
 // ===================== FUNCTIONS =======================
@@ -148,9 +153,19 @@ function startTheGame() {
 
 //updates the board
 function updateBoard(serverTurn) {
+  let capturedPiece = document.createElement('div');
   document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
   let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
   document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
+  if (serverTurn.player === 'p1') {
+    capturedPiece.classList.add('p2-capture');
+    document.querySelector('.p1-pieces').appendChild(capturedPiece);
+  }
+  if (serverTurn.player === 'p2') {
+    capturedPiece.classList.add('p1-capture');
+    document.querySelector('.p2-pieces').appendChild(capturedPiece);
+  }
+  console.log(serverTurn);
 }
 
 //Changes the pieces to draggable based on the player turn
@@ -186,11 +201,20 @@ function changeTurn(playerTurn) {
 }
 
 function endOfTheTurn(serverTurn) {
+  let capturedPiece = document.createElement('div');
   let activePiece = document.getElementById(serverTurn.startSpace).firstChild;;
   if (serverTurn.jump === true) {
     document.getElementById(serverTurn.endSpace).appendChild(activePiece);
     let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
     document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
+    if (serverTurn.player === 'p1') {
+      capturedPiece.classList.add('p2-capture');
+      document.querySelector('.p1-pieces').appendChild(capturedPiece);
+    }
+    if (serverTurn.player === 'p2') {
+      capturedPiece.classList.add('p1-capture');
+      document.querySelector('.p2-pieces').appendChild(capturedPiece);
+    }
   }
   if (serverTurn.king === true) {
     if (serverTurn.player === 'p1') {
@@ -221,7 +245,12 @@ function updateChat(chatLog) {
   chatDisplay.innerHTML = '';
   chatLog.forEach(chat => {
     let chatMessage = document.createElement('li');
-    chatMessage.innerHTML = `${chat.player}: ${chat.message}`;
+    if (chat.player === 'Player One') {
+      chatMessage.innerHTML = `<span class='p1'>${chat.player}</span>: ${chat.message}`;
+    }
+    if (chat.player === 'Player Two') {
+      chatMessage.innerHTML = `<span class='p2'>${chat.player}</span>: ${chat.message}`;
+    }
     chatDisplay.appendChild(chatMessage);
   })
 }

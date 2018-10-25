@@ -355,7 +355,6 @@ function endOfTheTurn(gameIndex) {
     endTheGame(gameIndex);
   } else {
     currentGame.turnCount = currentGame.turnCount + 1;
-    //ADD SOMETHING TO CHECK IF GAME IS DONE FIRST?
     io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('endOfTheTurn', currentGame.currentTurn);
     if (currentGame.currentTurn.player === 'p1') {
       currentGame.currentTurn.player = 'p2';
@@ -378,16 +377,21 @@ function endTheGame(gameIndex) {
 
 function chatMessage(socketId, message) {
   let gameIndex = findGame(socketId);
-  let currentGame = allGames[gameIndex];
+  if (gameIndex === -1) {
+    io.to(socketId).emit('noOneHasJoinedGame');
+  }
+  else {
+    let currentGame = allGames[gameIndex];
   
-  if (socketId === currentGame.playerOne) {
-    currentGame.chatLog.push({player: 'Player One', message: message});
+    if (socketId === currentGame.playerOne) {
+      currentGame.chatLog.push({player: 'Player One', message: message});
+    }
+    if (socketId === currentGame.playerTwo) {
+      currentGame.chatLog.push({player: 'Player Two', message: message});
+    }
+  
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateTheChat', currentGame.chatLog);
   }
-  if (socketId === currentGame.playerTwo) {
-    currentGame.chatLog.push({player: 'Player Two', message: message});
-  }
-
-  io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateTheChat', currentGame.chatLog);
 }
 
 function gamePieceTotals(gameIndex) {
