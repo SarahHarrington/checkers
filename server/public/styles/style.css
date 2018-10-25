@@ -268,13 +268,13 @@ body {
   background-color: #14151E;
   margin: 2px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .p2-pieces {
   background-color: #14151E;
   margin: 2px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, auto);
 }
 

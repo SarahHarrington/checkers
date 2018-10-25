@@ -54,6 +54,9 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', (reason) => {
     console.log('disconnect reasons', reason);
+    let gameIndex = findGame(socket.id);
+    let currentGame = allGames[gameIndex];
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerDisconnected');
   })
 
   socket.on('newChatMessage', (message) => {
@@ -94,6 +97,7 @@ io.on('connection', function (socket) {
   })
 
   socket.on('checkIfValidMove', (clientTurn) => {
+    //TODO: Make it so only the socket sending can play the turn, for solo play both player one and two can be the socket id?
     let gameIndex = findGame(socket.id);
     let currentGame = allGames[gameIndex];
     if (socket.id === currentGame.playerOne || socket.id === currentGame.playerTwo) {
@@ -155,10 +159,6 @@ io.on('connection', function (socket) {
               else {
                 checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces);
               }
-            }
-            else {
-              console.log('invalid move player one')
-              io.to(socket.id).emit('invalidMove');
             }
           }
           if (rear.length > 0 || rearJump.length > 0) {
@@ -353,6 +353,7 @@ function endOfTheTurn(gameIndex) {
   } else if (currentGame.turnCount === 50) {
     //end the game
     endTheGame(gameIndex);
+    //TODO:Add in a king turn count, count kings at the end of the game?
   } else {
     currentGame.turnCount = currentGame.turnCount + 1;
     io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('endOfTheTurn', currentGame.currentTurn);

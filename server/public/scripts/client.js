@@ -65,6 +65,11 @@ socket.on('disconnect', () => {
   console.log('this socket disconnected', socket.id)
 })
 
+socket.on('playerDisconnected', () => {
+  gameMessageDisplay.innerHTML = 'The other player has disconnected.';
+  //TODO: add in an update for the player two socket id to update?
+})
+
 socket.on('changePlayerTurn', serverTurn => {
   currentTurn.player = serverTurn.player;
   changeTurn(currentTurn.player);
@@ -182,7 +187,7 @@ function changeTurn(playerTurn) {
       piece.removeAttribute('draggable', true);
       piece.removeAttribute('ondragstart', 'dragStartHandler(event)');
     })
-    currentPlayerDisplay.innerHTML = '<p>Player 1 Go!</p>'
+    currentPlayerDisplay.innerHTML = '<span class="p1"> 1</span> go!';
   }
   if (playerTurn === 'p2') {
     playerTwoGlow.classList.add('glow');
@@ -196,7 +201,7 @@ function changeTurn(playerTurn) {
       piece.removeAttribute('draggable', true);
       piece.removeAttribute('ondragstart', 'dragStartHandler(event)');
     })
-    currentPlayerDisplay.innerHTML = '<p>Player 2 Go!</p>'
+    currentPlayerDisplay.innerHTML = '<span class="p2">2</span> go!';
   }
 }
 
