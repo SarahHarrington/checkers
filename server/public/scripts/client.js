@@ -187,7 +187,7 @@ function changeTurn(playerTurn) {
       piece.removeAttribute('draggable', true);
       piece.removeAttribute('ondragstart', 'dragStartHandler(event)');
     })
-    currentPlayerDisplay.innerHTML = '<span class="p1"> 1</span> go!';
+    currentPlayerDisplay.innerHTML = '<span class="p1">Player 1 go!</span>';
   }
   if (playerTurn === 'p2') {
     playerTwoGlow.classList.add('glow');
@@ -201,7 +201,7 @@ function changeTurn(playerTurn) {
       piece.removeAttribute('draggable', true);
       piece.removeAttribute('ondragstart', 'dragStartHandler(event)');
     })
-    currentPlayerDisplay.innerHTML = '<span class="p2">2</span> go!';
+    currentPlayerDisplay.innerHTML = '<span class="p2">Player 2 Go!</span>';
   }
 }
 

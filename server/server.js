@@ -55,8 +55,12 @@ io.on('connection', function (socket) {
   socket.on('disconnect', (reason) => {
     console.log('disconnect reasons', reason);
     let gameIndex = findGame(socket.id);
-    let currentGame = allGames[gameIndex];
-    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerDisconnected');
+    if (gameIndex === -1) {
+
+    } else {
+      let currentGame = allGames[gameIndex];
+      io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerDisconnected');  
+    }
   })
 
   socket.on('newChatMessage', (message) => {
@@ -349,10 +353,11 @@ function endOfTheTurn(gameIndex) {
   if (pieceTotals[0] === 0 || pieceTotals[1] === 0) {
     //end the game
     //TODO: add in who wins
-    endTheGame(gameIndex);
+    //p1 left, p2 right
+    endTheGame(gameIndex, pieceTotals);
   } else if (currentGame.turnCount === 50) {
     //end the game
-    endTheGame(gameIndex);
+    endTheGame(gameIndex, pieceTotals);
     //TODO:Add in a king turn count, count kings at the end of the game?
   } else {
     currentGame.turnCount = currentGame.turnCount + 1;
@@ -372,8 +377,12 @@ function endOfTheTurn(gameIndex) {
   }
 }
 
-function endTheGame(gameIndex) {
-  console.log('the game has ended!')
+function endTheGame(gameIndex, pieceTotals) {
+  console.log('the game has ended!', gamePieceTotals);
+  let currentGame = allGames[gameIndex];
+  if (gamePieceTotals[0] === 0) {
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerTwoWins');
+  }
 }
 
 function chatMessage(socketId, message) {
@@ -390,7 +399,6 @@ function chatMessage(socketId, message) {
     if (socketId === currentGame.playerTwo) {
       currentGame.chatLog.push({player: 'Player Two', message: message});
     }
-  
     io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateTheChat', currentGame.chatLog);
   }
 }
@@ -400,6 +408,8 @@ function gamePieceTotals(gameIndex) {
   console.log(currentGame.state);
   let p1Total = null;
   let p2Total = null;
+  let p1Kings = null;
+  let p2Kings = null;
   currentGame.state.forEach(space => {
     if (space.player === 'p1') {
       p1Total = p1Total + 1;
@@ -407,9 +417,14 @@ function gamePieceTotals(gameIndex) {
     if (space.player === 'p2') {
       p2Total = p2Total + 1;
     }
+    if (space.player === 'p1' && space.king === true) {
+      p1Kings = p1Kings + 1;
+    }
+    if (space.player === 'p2' && space.king === true) {
+      p2Kings = p2Kings + 1;
+    }
   })
-
-  return [p1Total, p2Total];
+  return [p1Total, p2Total, p1Kings, p2Kings];
 }
 
 server.listen(5000);
