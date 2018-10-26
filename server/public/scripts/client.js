@@ -173,6 +173,7 @@ function updateBoard(serverTurn) {
   let capturedPiece = document.createElement('div');
   document.getElementById(serverTurn.endSpace).appendChild(document.getElementById(serverTurn.startSpace).firstChild);
   let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
+  console.log('jumped piece', jumpedPiece);
   document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
   if (serverTurn.player === 'p1') {
     capturedPiece.classList.add('p2-capture');
@@ -223,6 +224,7 @@ function endOfTheTurn(serverTurn) {
   if (serverTurn.jump === true) {
     document.getElementById(serverTurn.endSpace).appendChild(activePiece);
     let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
+    console.log(jumpedPiece);
     document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
     if (serverTurn.player === 'p1') {
       capturedPiece.classList.add('p2-capture');

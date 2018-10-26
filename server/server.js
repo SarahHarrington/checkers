@@ -99,7 +99,6 @@ io.on('connection', function (socket) {
   })
 
   socket.on('checkIfValidMove', (clientTurn) => {
-    //TODO: Make it so only the socket sending can play the turn, for solo play both player one and two can be the socket id?
     let gameIndex = findGame(socket.id);
     let currentGame = allGames[gameIndex];
     if (socket.id === currentGame.playerOne || socket.id === currentGame.playerTwo) {
@@ -139,7 +138,6 @@ io.on('connection', function (socket) {
             }
           }
           if (forwardJump.length > 0) {
-            //TODO: Need to check if the captured piece is a king, if so, change back to false
             if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
               currentGame.state[clientTurn.endSpace].king = true;
               currentGame.currentTurn.king = true;
@@ -152,6 +150,9 @@ io.on('connection', function (socket) {
               currentGame.state[clientTurn.startSpace].player = 0;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               currentGame.state[checkingPieceJumped].player = 0;
+              if (currentGame.state[checkingPieceJumped].king === true) {
+                currentGame.state[checkingPieceJumped].king === false;
+              }
               let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
               let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
               if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
@@ -182,7 +183,6 @@ io.on('connection', function (socket) {
             }
           }
           if (rearJump.length > 0) {
-            //TODO: Need to check if the captured piece is a king, if so, change back to false
 
             if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
               currentGame.currentTurn.king = true;
@@ -196,6 +196,9 @@ io.on('connection', function (socket) {
               currentGame.state[clientTurn.startSpace].player = 0;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               currentGame.state[checkingPieceJumped].player = 0;
+              if (currentGame.state[checkingPieceJumped].king === true) {
+                currentGame.state[checkingPieceJumped].king === false;
+              }
               let nextPossibleMoves = validMoves[clientTurn.endSpace].rj;
               let possibleJumpedSpaces = validMoves[clientTurn.endSpace].r;
               if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
