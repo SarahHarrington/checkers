@@ -178,10 +178,16 @@ function updateBoard(serverTurn) {
   if (serverTurn.player === 'p1') {
     capturedPiece.classList.add('p2-capture');
     document.querySelector('.p1-pieces').appendChild(capturedPiece);
+    if (jumpedPiece.hasChildNodes() === true) {
+      document.querySelector('.p1-pieces').appendChild(capturedPiece);
+    }
   }
   if (serverTurn.player === 'p2') {
     capturedPiece.classList.add('p1-capture');
     document.querySelector('.p2-pieces').appendChild(capturedPiece);
+    if (jumpedPiece.hasChildNodes() === true) {
+      document.querySelector('.p2-pieces').appendChild(capturedPiece);
+    }
   }
   console.log(serverTurn);
 }
@@ -219,20 +225,27 @@ function changeTurn(playerTurn) {
 }
 
 function endOfTheTurn(serverTurn) {
+  console.log('serverturn king', serverTurn.king)
   let capturedPiece = document.createElement('div');
   let activePiece = document.getElementById(serverTurn.startSpace).firstChild;;
   if (serverTurn.jump === true) {
     document.getElementById(serverTurn.endSpace).appendChild(activePiece);
     let jumpedPiece = document.getElementById(serverTurn.jumpSpace).firstChild;
-    console.log(jumpedPiece);
+    console.log('jumped piece', jumpedPiece.hasChildNodes());
     document.getElementById(serverTurn.jumpSpace).removeChild(jumpedPiece);
     if (serverTurn.player === 'p1') {
       capturedPiece.classList.add('p2-capture');
       document.querySelector('.p1-pieces').appendChild(capturedPiece);
+      if (jumpedPiece.hasChildNodes() === true) {
+        document.querySelector('.p1-pieces').appendChild(capturedPiece);
+      }
     }
     if (serverTurn.player === 'p2') {
       capturedPiece.classList.add('p1-capture');
       document.querySelector('.p2-pieces').appendChild(capturedPiece);
+      if (jumpedPiece.hasChildNodes() === true) {
+        document.querySelector('.p2-pieces').appendChild(capturedPiece);
+      }
     }
   }
   if (serverTurn.king === true) {
