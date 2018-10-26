@@ -23,8 +23,6 @@ app.use(express.static(`${__dirname}/public`));
 
 io.on('connection', function (socket) {
   io.emit('aNewClientConnection', socket.id);
-  console.log('a new client has connected', socket.id);
-  console.log('game', game)
   if (game.playerOne === null) {
     game.playerOne = socket.id;
     game.id = socket.id
@@ -72,9 +70,10 @@ io.on('connection', function (socket) {
   //creates random number and determines which player goes first 
   socket.on('startTheGame', () => {
     let gameIndex = findGame(socket.id);
-    console.log(`gameIndex ${gameIndex}`);
     if (gameIndex === -1) {
+      game.playerTwo = socket.id;
       game.state = gameState;
+      console.log('game before push', game);
       allGames.push(game);
       game = {
         id: null,
@@ -86,7 +85,6 @@ io.on('connection', function (socket) {
         turnCount: null,
       }
     }
-
     gameIndex = findGame(socket.id);
     let currentGame = allGames[gameIndex];
     let randomNumber = Math.floor(Math.random() * 10) + 1;
@@ -110,12 +108,10 @@ io.on('connection', function (socket) {
         console.log('iniital invalid');
         io.to(socket.id).emit('invalidMove');
       }
-
       //manages movement of kinged pieces
       if (currentGame.state[clientTurn.startSpace].king === true) {
         kingmoves(gameIndex, clientTurn);
       }
-
       else {
         let possibleMoves = validMoves[clientTurn.startSpace];
         let forward = possibleMoves.f.filter(move => move === parseInt(clientTurn.endSpace));
@@ -127,7 +123,7 @@ io.on('connection', function (socket) {
         currentGame.currentTurn.endSpace = clientTurn.endSpace;
 
         /*************  PLAYER ONE  *****************/
-        if (clientTurn.player === 'p1') {
+        if (clientTurn.player === 'p1' && currentGame.playerOne === socket.id) {
           if (forward.length > 0) {
             if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
               currentGame.currentTurn.king = true;
@@ -143,6 +139,7 @@ io.on('connection', function (socket) {
             }
           }
           if (forwardJump.length > 0) {
+            //TODO: Need to check if the captured piece is a king, if so, change back to false
             if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
               currentGame.state[clientTurn.endSpace].king = true;
               currentGame.currentTurn.king = true;
@@ -169,7 +166,7 @@ io.on('connection', function (socket) {
             io.to(socket.id).emit('invalidMove');
           }
         }
-        if (clientTurn.player === 'p2') {
+        if (clientTurn.player === 'p2' && currentGame.playerTwo === socket.id) {
           if (rear.length > 0) {
             if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
               currentGame.currentTurn.king = true;
@@ -185,6 +182,8 @@ io.on('connection', function (socket) {
             }
           }
           if (rearJump.length > 0) {
+            //TODO: Need to check if the captured piece is a king, if so, change back to false
+
             if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
               currentGame.currentTurn.king = true;
               currentGame.state[clientTurn.endSpace].king = true;
@@ -354,9 +353,11 @@ function endOfTheTurn(gameIndex) {
     //end the game
     //TODO: add in who wins
     //p1 left, p2 right
+    console.log('no pieces left end game')
     endTheGame(gameIndex, pieceTotals);
   } else if (currentGame.turnCount === 50) {
     //end the game
+    console.log('end game hits 50 turns')
     endTheGame(gameIndex, pieceTotals);
     //TODO:Add in a king turn count, count kings at the end of the game?
   } else {
@@ -378,10 +379,14 @@ function endOfTheTurn(gameIndex) {
 }
 
 function endTheGame(gameIndex, pieceTotals) {
-  console.log('the game has ended!', gamePieceTotals);
   let currentGame = allGames[gameIndex];
-  if (gamePieceTotals[0] === 0) {
+  if (gamePieceTotals[0] === 0 || pieceTotals[3] > pieceTotals[2]) {
     io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerTwoWins');
+  } else if (gamePieceTotals[1] === 0 || pieceTotals[2] > pieceTotals[3]) {
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerOneWins');
+  }
+  else {
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('drawGame');
   }
 }
 

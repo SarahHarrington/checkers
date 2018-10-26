@@ -113,6 +113,18 @@ socket.on('noOneHasJoinedGame', () => {
   setTimeout(clearMessage, 4000);
 })
 
+socket.on('playerOneWins', () => {
+  gameMessageDisplay.innerHTML = 'Player One Wins!';
+})
+
+socket.on('playerTwoWins', () => {
+  gameMessageDisplay.innerHTML = 'Player Two Wins!';
+})
+
+socket.on('drawGame', () => {
+  gameMessageDisplay.innerHTML = 'This game was a draw! Thanks for playing!'
+})
+
 // ===================== FUNCTIONS =======================
 
 function dragStartHandler(e) {

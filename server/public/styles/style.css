@@ -41,7 +41,6 @@ body {
   height: 4vh;
   font-family: 'Monoton', cursive;
   font-size: 2vh;
-  font-weight: 100;
 }
 
 .player-side {
@@ -136,6 +135,7 @@ body {
   grid-column: 2;
   font-family: 'Monoton', cursive;
   font-size: 3vh;
+  font-weight: thin;
 }
 
 .game-button:hover {
@@ -301,3 +301,6 @@ footer {
   color: #EDF2F4;
 }
 
+.rules {
+  display: none;
+}
