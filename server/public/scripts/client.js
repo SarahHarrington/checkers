@@ -250,10 +250,12 @@ function endOfTheTurn(serverTurn) {
   }
   if (serverTurn.king === true) {
     if (serverTurn.player === 'p1') {
+      document.querySelector('p1-pieces').removeChild();
       document.getElementById(serverTurn.endSpace).appendChild(activePiece);
       activePiece.innerHTML = '<i class="fas fa-crown p1"></i>';
     }
     if (serverTurn.player === 'p2') {
+      document.querySelector('p2-pieces').removeChild();
       document.getElementById(serverTurn.endSpace).appendChild(activePiece);
       activePiece.innerHTML = '<i class="fas fa-crown p2"></i>';
     }
