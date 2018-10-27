@@ -57,15 +57,14 @@ io.on('connection', function (socket) {
 
     } else {
       let currentGame = allGames[gameIndex];
-      io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerDisconnected');  
+      io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('playerDisconnected');
     }
   })
 
   socket.on('newChatMessage', (message) => {
-    console.log(`${socket.id}, ${message}`);
     chatMessage(socket.id, message);
   })
-  
+
 
   //creates random number and determines which player goes first 
   socket.on('startTheGame', () => {
@@ -73,7 +72,6 @@ io.on('connection', function (socket) {
     if (gameIndex === -1) {
       game.playerTwo = socket.id;
       game.state = gameState;
-      console.log('game before push', game);
       allGames.push(game);
       game = {
         id: null,
@@ -99,12 +97,12 @@ io.on('connection', function (socket) {
   })
 
   socket.on('checkIfValidMove', (clientTurn) => {
+    console.log(clientTurn);
     let gameIndex = findGame(socket.id);
     let currentGame = allGames[gameIndex];
     if (socket.id === currentGame.playerOne || socket.id === currentGame.playerTwo) {
       //sends invalid message back to the client
       if (currentGame.state[clientTurn.endSpace].player !== 0) {
-        console.log('iniital invalid');
         io.to(socket.id).emit('invalidMove');
       }
       //manages movement of kinged pieces
@@ -128,11 +126,13 @@ io.on('connection', function (socket) {
               currentGame.currentTurn.king = true;
               currentGame.state[clientTurn.endSpace].king = true;
               currentGame.state[clientTurn.startSpace].player = 0;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               endOfTheTurn(gameIndex);
             }
             else {
               currentGame.state[clientTurn.startSpace].player = 0;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               endOfTheTurn(gameIndex);
             }
@@ -148,11 +148,10 @@ io.on('connection', function (socket) {
               currentGame.currentTurn.jump = true;
               currentGame.currentTurn.jumpSpace = checkingPieceJumped;
               currentGame.state[clientTurn.startSpace].player = 0;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               currentGame.state[checkingPieceJumped].player = 0;
-              if (currentGame.state[checkingPieceJumped].king === true) {
-                currentGame.state[checkingPieceJumped].king === false;
-              }
+              currentGame.state[checkingPieceJumped].king = false;
               let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
               let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
               if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
@@ -173,19 +172,21 @@ io.on('connection', function (socket) {
               currentGame.currentTurn.king = true;
               currentGame.state[clientTurn.endSpace].king = true;
               currentGame.state[clientTurn.startSpace].player = 0;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               endOfTheTurn(gameIndex);
             }
             else {
               currentGame.state[clientTurn.startSpace].player = 0;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               endOfTheTurn(gameIndex);
             }
           }
           if (rearJump.length > 0) {
-
             if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
               currentGame.currentTurn.king = true;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].king = true;
             }
             let jumpToSpaceIndex = possibleMoves.rj.indexOf(parseInt(clientTurn.endSpace));
@@ -194,11 +195,10 @@ io.on('connection', function (socket) {
               currentGame.currentTurn.jump = true;
               currentGame.currentTurn.jumpSpace = checkingPieceJumped;
               currentGame.state[clientTurn.startSpace].player = 0;
+              currentGame.state[clientTurn.startSpace].king = false;
               currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
               currentGame.state[checkingPieceJumped].player = 0;
-              if (currentGame.state[checkingPieceJumped].king === true) {
-                currentGame.state[checkingPieceJumped].king === false;
-              }
+              currentGame.state[checkingPieceJumped].king = false;
               let nextPossibleMoves = validMoves[clientTurn.endSpace].rj;
               let possibleJumpedSpaces = validMoves[clientTurn.endSpace].r;
               if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
@@ -215,7 +215,6 @@ io.on('connection', function (socket) {
         }
       }
     } else {
-      console.log('Cannot go')
       io.to(socket.id).emit('invalidMove');
     }
   })
@@ -338,6 +337,7 @@ function checkForKingJumps(gameIndex, clientTurn, checkingPieceJumped, nextPossi
   currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
   currentGame.state[clientTurn.endSpace].king = true;
   currentGame.state[checkingPieceJumped].player = 0;
+  currentGame.state[checkingPieceJumped].king = false;
 
   //check for additional jumps
   if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
@@ -350,20 +350,9 @@ function checkForKingJumps(gameIndex, clientTurn, checkingPieceJumped, nextPossi
 
 function endOfTheTurn(gameIndex) {
   let currentGame = allGames[gameIndex];
-  let pieceTotals = gamePieceTotals(gameIndex);
-
-  if (pieceTotals[0] === 0 || pieceTotals[1] === 0) {
-    //end the game
-    //TODO: add in who wins
-    //p1 left, p2 right
-    console.log('no pieces left end game')
-    endTheGame(gameIndex, pieceTotals);
-  } else if (currentGame.turnCount === 50) {
-    //end the game
-    console.log('end game hits 50 turns')
-    endTheGame(gameIndex, pieceTotals);
-    //TODO:Add in a king turn count, count kings at the end of the game?
-  } else {
+  let isGameEnd = checkIfGameEnd(gameIndex);
+  if (isGameEnd === false) {
+    console.log(allGames[gameIndex].state);
     currentGame.turnCount = currentGame.turnCount + 1;
     io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('endOfTheTurn', currentGame.currentTurn);
     if (currentGame.currentTurn.player === 'p1') {
@@ -378,6 +367,29 @@ function endOfTheTurn(gameIndex) {
       currentGame.currentTurn.jump = false;
       currentGame.currentTurn.king = false;
     }
+  }
+  else {
+    let pieceTotals = gamePieceTotals(gameIndex);
+    endTheGame(gameIndex, pieceTotals);
+  }
+}
+
+function checkIfGameEnd(gameIndex) {
+  let currentGame = allGames[gameIndex];
+  let pieceTotals = gamePieceTotals(gameIndex);
+  if (pieceTotals[0] === null || pieceTotals[1] === null) {
+    //end the game
+    //TODO: add in who wins
+    //p1 left, p2 right
+    console.log('no pieces left end game')
+    endTheGame(gameIndex, pieceTotals);
+  } else if (currentGame.turnCount === 80) {
+    //end the game
+    console.log('end game hits 80 turns')
+    endTheGame(gameIndex, pieceTotals);
+    //TODO:Add in a king turn count, count kings at the end of the game?
+  } else {
+    return false;
   }
 }
 
@@ -400,12 +412,12 @@ function chatMessage(socketId, message) {
   }
   else {
     let currentGame = allGames[gameIndex];
-  
+
     if (socketId === currentGame.playerOne) {
-      currentGame.chatLog.push({player: 'Player One', message: message});
+      currentGame.chatLog.push({ player: 'Player One', message: message });
     }
     if (socketId === currentGame.playerTwo) {
-      currentGame.chatLog.push({player: 'Player Two', message: message});
+      currentGame.chatLog.push({ player: 'Player Two', message: message });
     }
     io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateTheChat', currentGame.chatLog);
   }
@@ -413,7 +425,6 @@ function chatMessage(socketId, message) {
 
 function gamePieceTotals(gameIndex) {
   let currentGame = allGames[gameIndex];
-  console.log(currentGame.state);
   let p1Total = null;
   let p2Total = null;
   let p1Kings = null;
