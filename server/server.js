@@ -252,6 +252,7 @@ function kingmoves(gameIndex, clientTurn) {
   let forwardNextPossibleMoves = validMoves[clientTurn.endSpace].fj;
   let forwardPossibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
 
+  //TODO: Need to add check for it to be the other player
   if (forward.length > 0 || rear.length > 0) {
     currentGame.state[clientTurn.startSpace].player = 0;
     currentGame.state[clientTurn.startSpace].king = false;
@@ -424,6 +425,7 @@ function chatMessage(socketId, message) {
 }
 
 function gamePieceTotals(gameIndex) {
+  //TODO: Could I use this to update the captured pieces total?
   let currentGame = allGames[gameIndex];
   let p1Total = null;
   let p2Total = null;
