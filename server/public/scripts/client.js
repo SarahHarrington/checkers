@@ -37,7 +37,7 @@ for (let i = 0; i <= 11; i++) {
   let playerOnePiece = document.createElement('div');
   playerOnePiece.classList.add('game-piece');
   playerOnePiece.classList.add('player-one-piece');
-  playerOnePiece.setAttribute('id', 'p1');
+  playerOnePiece.setAttribute('id', '1');
   boardSpaces[i].appendChild(playerOnePiece);
 }
 
@@ -45,7 +45,7 @@ for (let i = 20; i <= 31; i++) {
   let playerTwoPiece = document.createElement('div');
   playerTwoPiece.classList.add('game-piece');
   playerTwoPiece.classList.add('player-two-piece');
-  playerTwoPiece.setAttribute('id', 'p2');
+  playerTwoPiece.setAttribute('id', '2');
   boardSpaces[i].appendChild(playerTwoPiece);
 }
 

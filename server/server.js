@@ -65,7 +65,6 @@ io.on('connection', function (socket) {
     chatMessage(socket.id, message);
   })
 
-
   //creates random number and determines which player goes first 
   socket.on('startTheGame', () => {
     let gameIndex = findGame(socket.id);
@@ -100,125 +99,132 @@ io.on('connection', function (socket) {
     console.log(clientTurn);
     let gameIndex = findGame(socket.id);
     let currentGame = allGames[gameIndex];
-    if (socket.id === currentGame.playerOne || socket.id === currentGame.playerTwo) {
-      //sends invalid message back to the client
-      if (currentGame.state[clientTurn.endSpace].player !== 0) {
-        io.to(socket.id).emit('invalidMove');
-      }
-      //manages movement of kinged pieces
-      if (currentGame.state[clientTurn.startSpace].king === true) {
-        kingmoves(gameIndex, clientTurn);
-      }
-      else {
-        let possibleMoves = validMoves[clientTurn.startSpace];
-        let forward = possibleMoves.f.filter(move => move === parseInt(clientTurn.endSpace));
-        let forwardJump = possibleMoves.fj.filter(move => move === parseInt(clientTurn.endSpace));
-        let rear = possibleMoves.r.filter(move => move === parseInt(clientTurn.endSpace));
-        let rearJump = possibleMoves.rj.filter(move => move === parseInt(clientTurn.endSpace));
+    let possibleMoves = validMoves[clientTurn.startSpace];
+  
+    let forward = possibleMoves.f.filter(move => move === parseInt(clientTurn.endSpace));
+    let forwardJump = possibleMoves.fj.filter(move => move === parseInt(clientTurn.endSpace));
+    let rear = possibleMoves.r.filter(move => move === parseInt(clientTurn.endSpace));
+    let rearJump = possibleMoves.rj.filter(move => move === parseInt(clientTurn.endSpace));
+    console.log(`forward ${forward}; fowardjump ${forwardJump}; rear ${rear}; rearJump ${rearJump}`);
 
-        currentGame.currentTurn.startSpace = clientTurn.startSpace;
-        currentGame.currentTurn.endSpace = clientTurn.endSpace;
+    if (forward !== 0 || rear !== 0) {
 
-        /*************  PLAYER ONE  *****************/
-        if (clientTurn.player === 'p1' && currentGame.playerOne === socket.id) {
-          if (forward.length > 0) {
-            if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
-              currentGame.currentTurn.king = true;
-              currentGame.state[clientTurn.endSpace].king = true;
-              currentGame.state[clientTurn.startSpace].player = 0;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
-              endOfTheTurn(gameIndex);
-            }
-            else {
-              currentGame.state[clientTurn.startSpace].player = 0;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
-              endOfTheTurn(gameIndex);
-            }
-          }
-          if (forwardJump.length > 0) {
-            if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
-              currentGame.state[clientTurn.endSpace].king = true;
-              currentGame.currentTurn.king = true;
-            }
-            let jumpToSpaceIndex = possibleMoves.fj.indexOf(parseInt(clientTurn.endSpace)); //ending spot
-            let checkingPieceJumped = possibleMoves.f[jumpToSpaceIndex]; //jumped space
-            if (currentGame.state[checkingPieceJumped].player === 'p2') {
-              currentGame.currentTurn.jump = true;
-              currentGame.currentTurn.jumpSpace = checkingPieceJumped;
-              currentGame.state[clientTurn.startSpace].player = 0;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
-              currentGame.state[checkingPieceJumped].player = 0;
-              currentGame.state[checkingPieceJumped].king = false;
-              let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
-              let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
-              if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
-                endOfTheTurn(gameIndex);
-              }
-              else {
-                checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces);
-              }
-            }
-          }
-          if (rear.length > 0 || rearJump.length > 0) {
-            io.to(socket.id).emit('invalidMove');
-          }
-        }
-        if (clientTurn.player === 'p2' && currentGame.playerTwo === socket.id) {
-          if (rear.length > 0) {
-            if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
-              currentGame.currentTurn.king = true;
-              currentGame.state[clientTurn.endSpace].king = true;
-              currentGame.state[clientTurn.startSpace].player = 0;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
-              endOfTheTurn(gameIndex);
-            }
-            else {
-              currentGame.state[clientTurn.startSpace].player = 0;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
-              endOfTheTurn(gameIndex);
-            }
-          }
-          if (rearJump.length > 0) {
-            if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
-              currentGame.currentTurn.king = true;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].king = true;
-            }
-            let jumpToSpaceIndex = possibleMoves.rj.indexOf(parseInt(clientTurn.endSpace));
-            let checkingPieceJumped = possibleMoves.r[jumpToSpaceIndex];
-            if (currentGame.state[checkingPieceJumped].player === 'p1') {
-              currentGame.currentTurn.jump = true;
-              currentGame.currentTurn.jumpSpace = checkingPieceJumped;
-              currentGame.state[clientTurn.startSpace].player = 0;
-              currentGame.state[clientTurn.startSpace].king = false;
-              currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
-              currentGame.state[checkingPieceJumped].player = 0;
-              currentGame.state[checkingPieceJumped].king = false;
-              let nextPossibleMoves = validMoves[clientTurn.endSpace].rj;
-              let possibleJumpedSpaces = validMoves[clientTurn.endSpace].r;
-              if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
-                endOfTheTurn(gameIndex);
-              }
-              else {
-                checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces);
-              }
-            }
-          }
-          if (forward.length > 0 || forwardJump.length > 0) {
-            io.to(socket.id).emit('invalidMove');
-          }
-        }
-      }
-    } else {
-      io.to(socket.id).emit('invalidMove');
     }
+    if (forwardJump !== 0 || rearJump !== 0) {
+
+    }
+
+
+    // if (socket.id === currentGame.playerOne || socket.id === currentGame.playerTwo) {
+    //   //sends invalid message back to the client if the space isn't empty
+    //   if (currentGame.state[clientTurn.endSpace].player !== 0) {
+    //     io.to(socket.id).emit('invalidMove');
+    //   }
+    //   //checks if selected gamepiece is king, sends to kingmoves function
+    //   else {
+    //     currentGame.currentTurn.startSpace = clientTurn.startSpace;
+    //     currentGame.currentTurn.endSpace = clientTurn.endSpace;
+
+    //     /*************  PLAYER ONE  *****************/
+    //     if (clientTurn.player === 'p1' && currentGame.playerOne === socket.id) {
+    //       playerOneTurn(clientTurn, gameIndex);
+    //     }
+    //     /*************  PLAYER TWO  *****************/
+    //     if (clientTurn.player === 'p2' && currentGame.playerTwo === socket.id) {
+    //       playerTwoTurn(clientTurn, gameIndex);
+    //     }
+    //   }
+    // } else {
+    //   io.to(socket.id).emit('invalidMove');
+    // }
   })
 })
+
+function playerOneTurn(clientTurn, gameIndex) {
+
+    if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
+
+      // if 
+      // currentGame.currentTurn.king = true;
+      // currentGame.state[clientTurn.endSpace].king = true;
+      // endOfTheTurn(clientTurn, gameIndex);
+    }
+    else {
+      endOfTheTurn(clientTurn, gameIndex);
+    }
+ 
+    if (clientTurn.endSpace === '29' || clientTurn.endSpace === '30' || clientTurn.endSpace === '31' || clientTurn.endSpace === '32') {
+      currentGame.state[clientTurn.endSpace].king = true;
+      currentGame.currentTurn.king = true;
+    }
+    let jumpToSpaceIndex = possibleMoves.fj.indexOf(parseInt(clientTurn.endSpace)); //ending spot
+    let checkingPieceJumped = possibleMoves.f[jumpToSpaceIndex]; //jumped space
+    if (currentGame.state[checkingPieceJumped].player === 'p2') {
+      currentGame.currentTurn.jump = true;
+      currentGame.currentTurn.jumpSpace = checkingPieceJumped;
+      currentGame.state[checkingPieceJumped].player = 0;
+      currentGame.state[checkingPieceJumped].king = false;
+      let nextPossibleMoves = validMoves[clientTurn.endSpace].fj;
+      let possibleJumpedSpaces = validMoves[clientTurn.endSpace].f;
+      if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
+        endOfTheTurn(clientTurn, gameIndex);
+      }
+      else {
+        currentGame.state[clientTurn.startSpace].player = 0;
+        currentGame.state[clientTurn.startSpace].king = false;
+        currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
+        checkForAdditionalJumps(gameIndex, clientTurn, nextPossibleMoves, possibleJumpedSpaces);
+      }
+    
+  }
+  if (rear.length > 0 || rearJump.length > 0) {
+    io.to(socket.id).emit('invalidMove');
+  }
+}
+
+
+
+function playerTwoTurn(clientTurn, gameIndex) {
+  if (rear.length > 0) {
+    if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
+      currentGame.currentTurn.king = true;
+      currentGame.state[clientTurn.endSpace].king = true;
+      endOfTheTurn(clientTurn, gameIndex);
+    }
+    else {
+      endOfTheTurn(clientTurn, gameIndex);
+    }
+  }
+  if (rearJump.length > 0) {
+    if (currentGame.currentTurn.endSpace === '1' || currentGame.currentTurn.endSpace === '2' || currentGame.currentTurn.endSpace === '3' || currentGame.currentTurn.endSpace === '4') {
+      currentGame.currentTurn.king = true;
+      currentGame.state[clientTurn.startSpace].king = false;
+      currentGame.state[clientTurn.endSpace].king = true;
+    }
+    let jumpToSpaceIndex = possibleMoves.rj.indexOf(parseInt(clientTurn.endSpace));
+    let checkingPieceJumped = possibleMoves.r[jumpToSpaceIndex];
+    if (currentGame.state[checkingPieceJumped].player === 'p1') {
+      currentGame.currentTurn.jump = true;
+      currentGame.currentTurn.jumpSpace = checkingPieceJumped;
+      currentGame.state[checkingPieceJumped].player = 0;
+      currentGame.state[checkingPieceJumped].king = false;
+      let nextPossibleMoves = validMoves[clientTurn.endSpace].rj;
+      let possibleJumpedSpaces = validMoves[clientTurn.endSpace].r;
+      if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
+        endOfTheTurn(clientTurn, gameIndex);
+      }
+      else {
+        currentGame.state[clientTurn.startSpace].player = 0;
+        currentGame.state[clientTurn.startSpace].king = false;
+        currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
+        checkForAdditionalJumps(gameIndex, clientTurn, nextPossibleMoves, possibleJumpedSpaces);
+      }
+    }
+  }
+  if (forward.length > 0 || forwardJump.length > 0) {
+    io.to(socket.id).emit('invalidMove');
+  }
+}
 
 /*********** FINDS THE GAME **********/
 function findGame(socketID) {
@@ -258,7 +264,7 @@ function kingmoves(gameIndex, clientTurn) {
     currentGame.state[clientTurn.startSpace].king = false;
     currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
     currentGame.state[clientTurn.endSpace].king = true;
-    endOfTheTurn(gameIndex);
+    endOfTheTurn(clientTurn, gameIndex);
   }
   if (forwardJump.length > 0) {
     checkForKingJumps(gameIndex, clientTurn, forwardCheckingPieceJumped, forwardNextPossibleMoves, forwardPossibleJumpedSpaces);
@@ -269,7 +275,7 @@ function kingmoves(gameIndex, clientTurn) {
 }
 
 /***************** CHECK FOR ADDITIONAL JUMPS *******************/
-function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces) {
+function checkForAdditionalJumps(gameIndex, clientTurn, nextPossibleMoves, possibleJumpedSpaces) {
   let currentGame = allGames[gameIndex];
   let leftMove = allGames[gameIndex].state[nextPossibleMoves[0]].player;
   let rightMove = allGames[gameIndex].state[nextPossibleMoves[1]].player;
@@ -279,7 +285,7 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
   switch (leftrightstate) {
     case 0:
       //NEITHER ARE VALID
-      endOfTheTurn(gameIndex);
+      endOfTheTurn(clientTurn, gameIndex);
       currentGame.currentTurn.jump = false;
       break;
     case 1:
@@ -291,7 +297,7 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
         io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateBoard', currentGame.currentTurn)
       }
       else {
-        endOfTheTurn(gameIndex);
+        endOfTheTurn(clientTurn, gameIndex);
         currentGame.currentTurn.jump = false;
       }
       break;
@@ -306,7 +312,7 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
         currentGame.currentTurn.jump = false;
       }
       else {
-        endOfTheTurn(gameIndex);
+        endOfTheTurn(clientTurn, gameIndex);
         currentGame.currentTurn.jump = false;
       }
       break;
@@ -319,7 +325,7 @@ function checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpa
         io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('updateBoard', currentGame.currentTurn)
       }
       else {
-        endOfTheTurn(gameIndex);
+        endOfTheTurn(clientTurn, gameIndex);
         currentGame.currentTurn.jump = false;
       }
       break;
@@ -342,16 +348,19 @@ function checkForKingJumps(gameIndex, clientTurn, checkingPieceJumped, nextPossi
 
   //check for additional jumps
   if (nextPossibleMoves[0] === 0 && nextPossibleMoves[1] === 0) {
-    endOfTheTurn(gameIndex);
+    endOfTheTurn(clientTurn, gameIndex);
   }
   else {
     checkForAdditionalJumps(gameIndex, nextPossibleMoves, possibleJumpedSpaces);
   }
 }
 
-function endOfTheTurn(gameIndex) {
+function endOfTheTurn(clientTurn, gameIndex) {
   let currentGame = allGames[gameIndex];
   let isGameEnd = checkIfGameEnd(gameIndex);
+  currentGame.state[clientTurn.startSpace].player = 0;
+  currentGame.state[clientTurn.startSpace].king = false;
+  currentGame.state[clientTurn.endSpace].player = currentGame.currentTurn.player;
   if (isGameEnd === false) {
     console.log(allGames[gameIndex].state);
     currentGame.turnCount = currentGame.turnCount + 1;
