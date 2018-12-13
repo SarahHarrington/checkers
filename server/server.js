@@ -24,7 +24,11 @@ app.use(express.static(`${__dirname}/public`));
 io.on('connection', function (socket) {
   io.emit('aNewClientConnection', socket.id);
 
-  console.log(socket.id)
+  console.log('joined', socket.id)
+
+  socket.on('disconnect', () => {
+    console.log('disconnected', socket.id);
+  })
 })
 
 

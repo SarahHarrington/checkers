@@ -7,6 +7,7 @@ const socket = io();
 
 socket.on('aNewClientConnection', (id) => {
   console.log(id);
+  
 })
 
 
