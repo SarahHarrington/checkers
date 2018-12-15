@@ -27,6 +27,8 @@ function displayGame(game) {
 }
 
 
+
+
 /***** KEEPS CONNECTION ALIVE FOR BROWSERS THAT TIME OUT Tabs*****/
 //TODO: If I use a cookie, could I track the user somehow?
 function keepConnectionAlive() {
