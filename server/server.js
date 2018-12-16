@@ -26,14 +26,16 @@ io.on('connection', function (socket) {
   if (game.playerOne === null) {
     game.playerOne = socket.id
     game.id = socket.id;
+    io.to(socket.id).emit('playerDeclare', {player: 'p1'});
   } else {
     game.playerTwo = socket.id
     game.id = game.id + socket.id;
     game.state = gameState;
     activeGames.push(game);
-    console.log('game', game);
-    console.log('activeGames', activeGames);
+    // console.log('game', game);
+    // console.log('activeGames', activeGames);
     io.emit('gameStarted', activeGames[0]);
+    io.to(socket.id).emit('playerDeclare', {player: 'p2'});
     [game.playerOne, game.playerTwo, game.state] = [null, null, []]
   }
 

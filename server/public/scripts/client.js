@@ -5,10 +5,10 @@ const socket = io();
 
 let boardSpaces = document.querySelectorAll('.playable');
 // let startGame = document.querySelector('#start-game').addEventListener('startGame', startGame);
+let playerDeclareMessage = document.querySelector('#player-declare');
 
 socket.on('aNewClientConnection', (id) => {
   console.log(id);
-
 })
 
 socket.on('gameStarted', (game) => {
@@ -16,11 +16,13 @@ socket.on('gameStarted', (game) => {
   displayGame(game);
 })
 
+socket.on('playerDeclare', (player) => {
+  console.log(player.player);
+  playerDeclare(player);
+})
+
 function displayGame(game) {
-  console.log('in the game load', game.state)
   for (let i = 0; i < game.state.length; i++) {
-    // console.log(game.state[i])
-    console.log('in the loop!')
     if (game.state[i].player === 1) {
       let playerOnePiece = document.createElement('div');
       playerOnePiece.classList.add('game-piece');
@@ -35,6 +37,15 @@ function displayGame(game) {
       playerOnePiece.setAttribute('id', 'p2');
       boardSpaces[i].appendChild(playerOnePiece);
     }
+  }
+}
+
+function playerDeclare(player) {
+  if (player.player === 'p1') {
+    playerDeclareMessage.innerHTML = 'Player 1'
+  }
+  if (player.player === 'p2') {
+    playerDeclareMessage.innerHTML = 'Player 2'
   }
 }
 
