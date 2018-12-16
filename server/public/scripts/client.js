@@ -4,7 +4,7 @@ const socket = io();
 //Board Things
 
 let boardSpaces = document.querySelectorAll('.playable');
-// let startGame = document.querySelector('#start-game').addEventListener('startGame', startGame);
+let startGame = document.querySelector('#start-game').addEventListener('startGame', startGame);
 let playerDeclareMessage = document.querySelector('#player-declare');
 let gameMessage = document.querySelector('#game-message');
 
@@ -55,16 +55,9 @@ function playerDeclare(player) {
   }
 }
 
-// function startGame() {
-
-// }
-
-
-// let playerOnePiece = document.createElement('div');
-// playerOnePiece.classList.add('game-piece');
-// playerOnePiece.classList.add('player-one-piece');
-// playerOnePiece.setAttribute('id', 'p1');
-// boardSpaces[i].appendChild(playerOnePiece);
+function startGame() {
+  socket.emit('startTheGame'); 
+}
 
 /***** KEEPS CONNECTION ALIVE FOR BROWSERS THAT TIME OUT Tabs*****/
 //TODO: If I use a cookie, could I track the user somehow?

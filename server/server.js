@@ -33,7 +33,15 @@ io.on('connection', function (socket) {
     game.state = gameState;
     activeGames.push(game);
     io.to(socket.id).emit('playerDeclare', {player: 'p2'});
-    // [game.playerOne, game.playerTwo, game.state] = [null, null, []];
+    game = {
+      id: null,
+      playerOne: null,
+      playerTwo: null,
+      state: [],
+      currentTurn: {},
+      chatLog: [],
+      turnCount: null,
+    }
     readyToStartGame(socket.id);
   }
 
@@ -41,10 +49,15 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', () => {
     console.log('disconnected', socket.id);
+    //TODO: Add a notice to remaining player that the other person disconnected
   })
 
   socket.on('keepConnectionAlive', () => {
     console.log('ping from client', socket.id);
+  })
+
+  socket.on('startTheGame', () => {
+
   })
 })
 
