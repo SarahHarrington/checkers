@@ -4,7 +4,7 @@ const socket = io();
 //Board Things
 
 let boardSpaces = document.querySelectorAll('.playable');
-let startGame = document.querySelector('#start-game').addEventListener('startGame', startGame);
+let startGameButton = document.querySelector('#start-game');
 let playerDeclareMessage = document.querySelector('#player-declare');
 let gameMessage = document.querySelector('#game-message');
 
@@ -13,7 +13,6 @@ socket.on('aNewClientConnection', (id) => {
 })
 
 socket.on('gameStarted', (game) => {
-  console.log('two players have joined');
   displayGame(game);
 })
 
@@ -28,6 +27,7 @@ socket.on('gameReadyToStart', () => {
 })
 
 function displayGame(game) {
+  console.log(game);
   for (let i = 0; i < game.state.length; i++) {
     if (game.state[i].player === 1) {
       let playerOnePiece = document.createElement('div');
@@ -56,6 +56,7 @@ function playerDeclare(player) {
 }
 
 function startGame() {
+  console.log('start game button pushed')
   socket.emit('startTheGame'); 
 }
 
@@ -67,3 +68,6 @@ function keepConnectionAlive() {
   }, 20000)
 }
 keepConnectionAlive();
+
+
+startGameButton.addEventListener('click', startGame);

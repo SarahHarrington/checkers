@@ -57,11 +57,20 @@ io.on('connection', function (socket) {
   })
 
   socket.on('startTheGame', () => {
-
+    let gameIndex = findGame(socket.id);
+    let currentGame = activeGames[gameIndex];
+    let randomNumber = Math.floor(Math.random() * 10) + 1;
+    if (randomNumber <= 5) {
+      currentGame.currentTurn.player = 'p1';
+    }
+    if (randomNumber >= 6) {
+      currentGame.currentTurn.player = 'p2';
+    }
+    io.emit('gameStarted', currentGame);
   })
 })
 
-io.emit('gameStarted', activeGames[0]);
+
 
 
 function findGame(socketID) {
