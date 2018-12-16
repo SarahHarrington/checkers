@@ -6,6 +6,7 @@ const socket = io();
 let boardSpaces = document.querySelectorAll('.playable');
 // let startGame = document.querySelector('#start-game').addEventListener('startGame', startGame);
 let playerDeclareMessage = document.querySelector('#player-declare');
+let gameMessage = document.querySelector('#game-message');
 
 socket.on('aNewClientConnection', (id) => {
   console.log(id);
@@ -19,6 +20,11 @@ socket.on('gameStarted', (game) => {
 socket.on('playerDeclare', (player) => {
   console.log(player.player);
   playerDeclare(player);
+})
+
+socket.on('gameReadyToStart', () => {
+  console.log('ready to start the game message should update')
+  gameMessage.innerHTML = 'Press Start Game to Begin!';
 })
 
 function displayGame(game) {
@@ -42,10 +48,10 @@ function displayGame(game) {
 
 function playerDeclare(player) {
   if (player.player === 'p1') {
-    playerDeclareMessage.innerHTML = 'Player 1'
-  }
-  if (player.player === 'p2') {
-    playerDeclareMessage.innerHTML = 'Player 2'
+    playerDeclareMessage.innerHTML = 'Player 1';
+    gameMessage.innerHTML = 'Wait for another player, or press Start Game!'
+  } if (player.player === 'p2') {
+    playerDeclareMessage.innerHTML = 'Player 2';
   }
 }
 

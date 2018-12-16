@@ -32,11 +32,9 @@ io.on('connection', function (socket) {
     game.id = game.id + socket.id;
     game.state = gameState;
     activeGames.push(game);
-    // console.log('game', game);
-    // console.log('activeGames', activeGames);
-    io.emit('gameStarted', activeGames[0]);
     io.to(socket.id).emit('playerDeclare', {player: 'p2'});
-    [game.playerOne, game.playerTwo, game.state] = [null, null, []]
+    // [game.playerOne, game.playerTwo, game.state] = [null, null, []];
+    readyToStartGame(socket.id);
   }
 
   console.log('joined', socket.id)
@@ -50,6 +48,26 @@ io.on('connection', function (socket) {
   })
 })
 
+io.emit('gameStarted', activeGames[0]);
+
+
+function findGame(socketID) {
+  let gameID = activeGames.filter(game => game.id.includes(socketID));
+  if (gameID.length === 0) {
+    return -1;
+  }
+  else {
+    let gameIndex = activeGames.findIndex(game => game.id === gameID[0].id);
+    return gameIndex;
+  }
+}
+
+function readyToStartGame(socketId) {
+  let gameIndex = findGame(socketId);
+  let currentGame = activeGames[gameIndex];
+  console.log(currentGame);
+  io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('gameReadyToStart');
+}
 
 server.listen(5000);
 console.log('listening on server');
