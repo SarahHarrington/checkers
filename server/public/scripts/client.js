@@ -44,6 +44,9 @@ function displayGame(game) {
       boardSpaces[i].appendChild(playerOnePiece);
     }
   }
+  let activePlayer = document.querySelector(`#${game.currentTurn.player}-side`);
+  console.log(activePlayer);
+  activePlayer.classList.add('glow');
 }
 
 function playerDeclare(player) {
