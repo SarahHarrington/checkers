@@ -47,6 +47,7 @@ function displayGame(game) {
   let activePlayer = document.querySelector(`#${game.currentTurn.player}-side`);
   console.log(activePlayer);
   activePlayer.classList.add('glow');
+  gameMessage.innerHTML = '';
 }
 
 function playerDeclare(player) {
