@@ -35,6 +35,7 @@ function displayGame(game) {
       playerOnePiece.classList.add('player-one-piece');
       playerOnePiece.setAttribute('id', 'p1');
       playerOnePiece.setAttribute('draggable', true);
+      playerOnePiece.setAttribute('ondragstart', 'dragStartHandler(event)')
       boardSpaces[i].appendChild(playerOnePiece);
     }
     if (game.state[i].player === 2) {
@@ -43,6 +44,7 @@ function displayGame(game) {
       playerTwoPiece.classList.add('player-two-piece');
       playerTwoPiece.setAttribute('id', 'p2');
       playerTwoPiece.setAttribute('draggable', true);
+      playerTwoPiece.setAttribute('ondragstart', 'dragStartHandler(event)')
       boardSpaces[i].appendChild(playerTwoPiece);
     }
   }
@@ -67,31 +69,31 @@ function startGame() {
 }
 
 let activeTurn = {
+  piece: '',
   player: '',
   startSpace: null,
   endSpace: null
 }
 
 function dragStartHandler(e) {
-  console.log('drag start handler', e);
-  activeTurn.startSpace = e.target.id;
   e.dataTransfer.setData("html", e.target.id);
-  currentTurn.activePiece = e.target;
+  console.log('drag start', e.target);
+  activeTurn.piece = e.target;
+  activeTurn.player = e.target.id;
   if (isNaN(parseInt(e.target.parentElement.id))) {
-    currentTurn.startSpace = e.target.parentElement.parentElement.id;
+    activeTurn.startSpace = e.target.parentElement.parentElement.id;
   } else {
-    currentTurn.startSpace = e.target.parentElement.id;
+    activeTurn.startSpace = e.target.parentElement.id;
   }
 }
 
 function dragoverHandler(e) {
-  console.log('drag over handler', e)
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
 }
 
 function dropHandler(e) {
-  console.log('drop handler event', e);
+  activeTurn.endSpace = e.target.id;
   e.preventDefault();
   if (activeTurn.endSpace === 'p1' || activeTurn.endSpace === 'p2') {
     gameMessageDisplay.innerHTML = 'That move is not valid';
@@ -99,7 +101,8 @@ function dropHandler(e) {
     return;
   }
   else {
-    socket.emit('checkTheMove', );
+    console.log(activeTurn)
+    socket.emit('checkIfValidMove', activeTurn);
   }
 }
 
