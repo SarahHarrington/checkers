@@ -68,10 +68,15 @@ io.on('connection', function (socket) {
     }
     io.emit('gameStarted', currentGame);
   })
+
+  socket.on('checkIfValidMove', (activeTurn) => {
+    console.log('active turn from the client', activeTurn);
+    //TODO: Do I want game play to be based on the player turn, make sure the move the
+    //move is valid and then check against the game state to ensure the move can be made
+    //update gamestate and send back for updating DOM?
+    //TODO: check in the valid moves if p1, check forward, of p2 check rear, if king, check both
+  }) 
 })
-
-
-
 
 function findGame(socketID) {
   let gameID = activeGames.filter(game => game.id.includes(socketID));
