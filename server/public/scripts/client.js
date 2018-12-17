@@ -66,8 +66,15 @@ function startGame() {
   socket.emit('startTheGame'); 
 }
 
+let activeTurn = {
+  player: '',
+  startSpace: null,
+  endSpace: null
+}
+
 function dragStartHandler(e) {
-  console.log(e);
+  console.log('drag start handler', e);
+  activeTurn.startSpace = e.target.id;
   e.dataTransfer.setData("html", e.target.id);
   currentTurn.activePiece = e.target;
   if (isNaN(parseInt(e.target.parentElement.id))) {
@@ -78,15 +85,15 @@ function dragStartHandler(e) {
 }
 
 function dragoverHandler(e) {
-  console.log(e);
+  console.log('drag over handler', e)
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
 }
 
 function dropHandler(e) {
-  console.log(e);
+  console.log('drop handler event', e);
   e.preventDefault();
-  if (currentTurn.endSpace === 'p1' || currentTurn.endSpace === 'p2') {
+  if (activeTurn.endSpace === 'p1' || activeTurn.endSpace === 'p2') {
     gameMessageDisplay.innerHTML = 'That move is not valid';
     setTimeout(clearMessage, 4000);
     return;
