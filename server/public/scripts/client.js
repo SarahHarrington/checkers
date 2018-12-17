@@ -67,6 +67,7 @@ function startGame() {
 }
 
 function dragStartHandler(e) {
+  console.log(e);
   e.dataTransfer.setData("html", e.target.id);
   currentTurn.activePiece = e.target;
   if (isNaN(parseInt(e.target.parentElement.id))) {
@@ -77,6 +78,7 @@ function dragStartHandler(e) {
 }
 
 function dragoverHandler(e) {
+  console.log(e);
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
 }
