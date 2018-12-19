@@ -26,13 +26,13 @@ io.on('connection', function (socket) {
   if (game.playerOne === null) {
     game.playerOne = socket.id
     game.id = socket.id;
-    io.to(socket.id).emit('playerDeclare', {player: 'p1'});
+    io.to(socket.id).emit('playerDeclare', { player: 'p1' });
   } else {
     game.playerTwo = socket.id
     game.id = game.id + socket.id;
     game.state = gameState;
     activeGames.push(game);
-    io.to(socket.id).emit('playerDeclare', {player: 'p2'});
+    io.to(socket.id).emit('playerDeclare', { player: 'p2' });
     game = {
       id: null,
       playerOne: null,
@@ -57,6 +57,21 @@ io.on('connection', function (socket) {
   })
 
   socket.on('startTheGame', () => {
+    if (game.playerTwo === null) {
+      game.playerTwo = socket.id
+      game.state = gameState;
+      activeGames.push(game);
+      io.to(socket.id).emit('playerDeclare', { player: 'p2' });
+      game = {
+        id: null,
+        playerOne: null,
+        playerTwo: null,
+        state: [],
+        currentTurn: {},
+        chatLog: [],
+        turnCount: null,
+      }
+    }
     let gameIndex = findGame(socket.id);
     let currentGame = activeGames[gameIndex];
     let randomNumber = Math.floor(Math.random() * 10) + 1;
@@ -75,7 +90,9 @@ io.on('connection', function (socket) {
     //move is valid and then check against the game state to ensure the move can be made
     //update gamestate and send back for updating DOM?
     //TODO: check in the valid moves if p1, check forward, of p2 check rear, if king, check both
-  }) 
+
+    
+  })
 })
 
 function findGame(socketID) {
