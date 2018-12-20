@@ -57,7 +57,7 @@ io.on('connection', function (socket) {
   })
 
   socket.on('startTheGame', () => {
-    if (game.playerTwo === null) {
+    if (game.playerOne != null && game.playerTwo === null) {
       game.playerTwo = socket.id
       game.state = gameState;
       activeGames.push(game);
@@ -91,7 +91,15 @@ io.on('connection', function (socket) {
     //update gamestate and send back for updating DOM?
     //TODO: check in the valid moves if p1, check forward, of p2 check rear, if king, check both
 
-    
+    let validTurnMoves = validMoves[parseInt(activeTurn.startSpace)];
+    let result = Object.keys(validTurnMoves).map(function(key) {
+      return [(key), validTurnMoves[key]]
+    })
+    console.log(validTurnMoves)
+    console.log('result', result);
+
+    let direction = result.filter(dir => parseInt(dir) === parseInt(activeTurn.endSpace));
+    console.log(direction);
   })
 })
 
