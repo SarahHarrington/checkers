@@ -92,15 +92,10 @@ io.on('connection', function (socket) {
     //TODO: check in the valid moves if p1, check forward, of p2 check rear, if king, check both
 
     let validTurnMoves = validMoves[parseInt(activeTurn.startSpace)];
-    let result = Object.keys(validTurnMoves).map(function(key) {
-      return [(key), validTurnMoves[key]]
-    })
+  
     console.log(validTurnMoves)
-    console.log('result', result);
-
-    let direction = result.filter(dir => parseInt(dir) === parseInt(activeTurn.endSpace));
-    
-    console.log(direction);
+    let singleMove = validTurnMoves.fj.filter(space => space === activeTurn.endSpace);
+    console.log(singleMove);
   })
 })
 
