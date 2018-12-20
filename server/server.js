@@ -99,6 +99,7 @@ io.on('connection', function (socket) {
     console.log('result', result);
 
     let direction = result.filter(dir => parseInt(dir) === parseInt(activeTurn.endSpace));
+    
     console.log(direction);
   })
 })
