@@ -1,7 +1,9 @@
 let gameState = [
-  // {
-  //   id: 0,
-  // },
+  {
+    id: 0,
+    player: null,
+    space: null,
+  },
   {
     player: 1,
     space: 1,

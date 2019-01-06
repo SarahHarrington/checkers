@@ -147,7 +147,13 @@ function singleSpaceMove(currentGame, activeTurn) {
     console.log('the single move turn is done')
     //TODO: add an emitter here to update the board
     console.log('updated game state', currentGame.state)
-    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('turnComplete', currentGame);
+
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('turnComplete', {
+      startSpace: activeTurn.startSpace,
+      endSpace: activeTurn.endSpace,
+      jumpSpace: null,
+      playerTurn: currentGame.currentTurn.player
+    });
   }
 }
 

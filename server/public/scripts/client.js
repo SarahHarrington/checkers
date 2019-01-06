@@ -27,12 +27,13 @@ socket.on('gameReadyToStart', () => {
 })
 
 socket.on('turnComplete', (game) => {
+  console.log(game);
   updateTheGame(game);
 })
 
 function displayGame(game) {
   console.log(game);
-  for (let i = 0; i < game.state.length; i++) {
+  for (let i = 1; i < game.state.length; i++) {
     if (game.state[i].player === 1) {
       let playerOnePiece = document.createElement('div');
       playerOnePiece.classList.add('game-piece');
@@ -40,7 +41,7 @@ function displayGame(game) {
       playerOnePiece.setAttribute('id', '1');
       playerOnePiece.setAttribute('draggable', true);
       playerOnePiece.setAttribute('ondragstart', 'dragStartHandler(event)')
-      boardSpaces[i].appendChild(playerOnePiece);
+      boardSpaces[i - 1].appendChild(playerOnePiece);
     }
     if (game.state[i].player === 2) {
       let playerTwoPiece = document.createElement('div');
@@ -49,7 +50,7 @@ function displayGame(game) {
       playerTwoPiece.setAttribute('id', '2');
       playerTwoPiece.setAttribute('draggable', true);
       playerTwoPiece.setAttribute('ondragstart', 'dragStartHandler(event)')
-      boardSpaces[i].appendChild(playerTwoPiece);
+      boardSpaces[i - 1].appendChild(playerTwoPiece);
     }
   }
   let activePlayer = document.querySelector(`#p${game.currentTurn.player}-side`);
@@ -60,7 +61,14 @@ function displayGame(game) {
 
 function updateTheGame(game) {
   console.log('update the game board')
-  
+
+  let startSpace = document.getElementById(game.startSpace);
+  let startSpacePiece = startSpace.firstChild;
+  let endSpace = document.getElementById(game.endSpace);
+  console.log(startSpace);
+  startSpace.removeChild(startSpacePiece);
+  endSpace.appendChild(startSpacePiece);
+  console.log(startSpace);
 }
 
 function playerDeclare(player) {
