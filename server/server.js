@@ -95,9 +95,6 @@ io.on('connection', function (socket) {
 })
 
 function checkIfValidPlayer(currentGame, activeTurn, socketId) {
-  console.log(currentGame)
-  console.log('the player on the start space', currentGame.state[activeTurn.startSpace - 1].player);
-  if (currentGame.currentGame.player === 1)
   
   if (currentGame.state[activeTurn.startSpace - 1].player === currentGame.currentTurn.player && socketId === currentGame.playerOne) {
     console.log('player one is going')
