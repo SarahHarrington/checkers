@@ -26,6 +26,10 @@ socket.on('gameReadyToStart', () => {
   gameMessage.innerHTML = 'Press Start Game to Begin!';
 })
 
+socket.on('turnComplete', (game) => {
+  updateTheGame(game);
+})
+
 function displayGame(game) {
   console.log(game);
   for (let i = 0; i < game.state.length; i++) {
@@ -33,7 +37,7 @@ function displayGame(game) {
       let playerOnePiece = document.createElement('div');
       playerOnePiece.classList.add('game-piece');
       playerOnePiece.classList.add('player-one-piece');
-      playerOnePiece.setAttribute('id', 'p1');
+      playerOnePiece.setAttribute('id', '1');
       playerOnePiece.setAttribute('draggable', true);
       playerOnePiece.setAttribute('ondragstart', 'dragStartHandler(event)')
       boardSpaces[i].appendChild(playerOnePiece);
@@ -42,16 +46,21 @@ function displayGame(game) {
       let playerTwoPiece = document.createElement('div');
       playerTwoPiece.classList.add('game-piece');
       playerTwoPiece.classList.add('player-two-piece');
-      playerTwoPiece.setAttribute('id', 'p2');
+      playerTwoPiece.setAttribute('id', '2');
       playerTwoPiece.setAttribute('draggable', true);
       playerTwoPiece.setAttribute('ondragstart', 'dragStartHandler(event)')
       boardSpaces[i].appendChild(playerTwoPiece);
     }
   }
-  let activePlayer = document.querySelector(`#${game.currentTurn.player}-side`);
+  let activePlayer = document.querySelector(`#p${game.currentTurn.player}-side`);
   console.log(activePlayer);
   activePlayer.classList.add('glow');
   gameMessage.innerHTML = '';
+}
+
+function updateTheGame(game) {
+  console.log('update the game board')
+  
 }
 
 function playerDeclare(player) {
@@ -81,9 +90,9 @@ function dragStartHandler(e) {
   activeTurn.piece = e.target;
   activeTurn.player = e.target.id;
   if (isNaN(parseInt(e.target.parentElement.id))) {
-    activeTurn.startSpace = e.target.parentElement.parentElement.id;
+    activeTurn.startSpace = parseInt(e.target.parentElement.parentElement.id);
   } else {
-    activeTurn.startSpace = e.target.parentElement.id;
+    activeTurn.startSpace = parseInt(e.target.parentElement.id);
   }
 }
 
@@ -93,17 +102,17 @@ function dragoverHandler(e) {
 }
 
 function dropHandler(e) {
-  activeTurn.endSpace = e.target.id;
+  activeTurn.endSpace = parseInt(e.target.id);
   e.preventDefault();
-  if (activeTurn.endSpace === 'p1' || activeTurn.endSpace === 'p2') {
-    gameMessageDisplay.innerHTML = 'That move is not valid';
-    setTimeout(clearMessage, 4000);
-    return;
-  }
-  else {
+  // if (activeTurn.endSpace === 'p1' || activeTurn.endSpace === 'p2') {
+  //   gameMessageDisplay.innerHTML = 'That move is not valid';
+  //   setTimeout(clearMessage, 4000);
+  //   return;
+  // }
+  // else {
     console.log(activeTurn)
     socket.emit('checkIfValidMove', activeTurn);
-  }
+  // }
 }
 
 /***** KEEPS CONNECTION ALIVE FOR BROWSERS THAT TIME OUT Tabs*****/

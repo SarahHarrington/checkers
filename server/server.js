@@ -45,7 +45,7 @@ io.on('connection', function (socket) {
     readyToStartGame(socket.id);
   }
 
-  console.log('joined', socket.id)
+  // console.log('joined', socket.id)
 
   socket.on('disconnect', () => {
     console.log('disconnected', socket.id);
@@ -76,28 +76,83 @@ io.on('connection', function (socket) {
     let currentGame = activeGames[gameIndex];
     let randomNumber = Math.floor(Math.random() * 10) + 1;
     if (randomNumber <= 5) {
-      currentGame.currentTurn.player = 'p1';
+      currentGame.currentTurn.player = 1;
     }
     if (randomNumber >= 6) {
-      currentGame.currentTurn.player = 'p2';
+      currentGame.currentTurn.player = 2;
     }
     io.emit('gameStarted', currentGame);
   })
 
   socket.on('checkIfValidMove', (activeTurn) => {
-    console.log('active turn from the client', activeTurn);
-    //TODO: Do I want game play to be based on the player turn, make sure the move the
-    //move is valid and then check against the game state to ensure the move can be made
-    //update gamestate and send back for updating DOM?
-    //TODO: check in the valid moves if p1, check forward, of p2 check rear, if king, check both
 
-    let validTurnMoves = validMoves[parseInt(activeTurn.startSpace)];
-  
-    console.log(validTurnMoves)
-    let singleMove = validTurnMoves.fj.filter(space => space === activeTurn.endSpace);
-    console.log(singleMove);
+    let gameIndex = findGame(socket.id);
+    let currentGame = activeGames[gameIndex];
+
+    checkIfValidPlayer(currentGame, activeTurn, socket.id)
   })
+
 })
+
+function checkIfValidPlayer(currentGame, activeTurn, socketId) {
+  console.log(currentGame)
+  console.log('the player on the start space', currentGame.state[activeTurn.startSpace - 1].player);
+  if (currentGame.currentGame.player === 1)
+  
+  if (currentGame.state[activeTurn.startSpace - 1].player === currentGame.currentTurn.player && socketId === currentGame.playerOne) {
+    console.log('player one is going')
+    checktheMoveType(currentGame, activeTurn)
+  } else if (currentGame.state[activeTurn.startSpace - 1].player === currentGame.currentTurn.player && socketId === currentGame.playerTwo) {
+    console.log('player two is going')
+    checktheMoveType(currentGame, activeTurn)
+  } else {
+    console.log('it is not your turn')
+    //TODO: add an emit
+  }
+}
+
+function checktheMoveType(currentGame, activeTurn) {
+  let validTurnMoves = validMoves[parseInt(activeTurn.startSpace)];
+
+  // console.log('validTurnMoves', validTurnMoves)
+  let forward = validTurnMoves.f.filter(space => space === activeTurn.endSpace).length;
+  let rear = validTurnMoves.r.filter(space => space === activeTurn.endSpace).length;
+  let forwardJump = validTurnMoves.fj.filter(space => space === activeTurn.endSpace).length;
+  let rearJump = validTurnMoves.rj.filter(space => space === activeTurn.endSpace).length;
+
+  let directions = [forward, rear, forwardJump, rearJump];
+  let direction = directions.indexOf(1); // index of will indicate the direction the piece is going
+
+
+  if (currentGame.state[activeTurn.startSpace].king === true) {
+    console.log('this is a king piece!')
+    //TODO: Make a seperate king function?
+  } else if (direction <= 1) {
+    console.log('single move');
+    singleSpaceMove(currentGame, activeTurn)
+  } else if (direction >= 2) {
+    jumpSpaceMove(currentGame, activeTurn)
+  }
+
+
+}
+
+function singleSpaceMove(currentGame, activeTurn) {
+  if (currentGame.state[activeTurn.endSpace].player === 0) {
+    currentGame.state[activeTurn.startSpace - 1].player = 0;
+    currentGame.state[activeTurn.endSpace - 1].player = parseInt(activeTurn.player);
+    if (currentGame.currentTurn.player === 1) {
+      currentGame.currentTurn.player = 2;
+    } else {
+      currentGame.currentTurn.player = 1;
+    }
+    console.log(activeTurn);
+    console.log('the single move turn is done')
+    //TODO: add an emitter here to update the board
+    console.log('updated game state', currentGame.state)
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('turnComplete', currentGame);
+  }
+}
 
 function findGame(socketID) {
   let gameID = activeGames.filter(game => game.id.includes(socketID));
@@ -113,7 +168,7 @@ function findGame(socketID) {
 function readyToStartGame(socketId) {
   let gameIndex = findGame(socketId);
   let currentGame = activeGames[gameIndex];
-  console.log(currentGame);
+  // console.log(currentGame);
   io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('gameReadyToStart');
 }
 
