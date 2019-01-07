@@ -81,7 +81,7 @@ io.on('connection', function (socket) {
     if (randomNumber >= 6) {
       currentGame.currentTurn.player = 2;
     }
-    io.emit('gameStarted', currentGame);
+    io.to(currentGame.playerOne).to(currentGame.playerTwo).emit('gameStarted', currentGame);
   })
 
   socket.on('checkIfValidMove', (activeTurn) => {
@@ -96,16 +96,22 @@ io.on('connection', function (socket) {
 
 function checkIfValidPlayer(currentGame, activeTurn, socketId) {
   
-  if (currentGame.state[activeTurn.startSpace - 1].player === currentGame.currentTurn.player && socketId === currentGame.playerOne) {
-    console.log('player one is going')
-    checktheMoveType(currentGame, activeTurn)
-  } else if (currentGame.state[activeTurn.startSpace - 1].player === currentGame.currentTurn.player && socketId === currentGame.playerTwo) {
-    console.log('player two is going')
-    checktheMoveType(currentGame, activeTurn)
-  } else {
-    console.log('it is not your turn')
-    //TODO: add an emit
-  }
+  //TODO: need to fix this so it distinguishes the socketid & player from the actual game turn
+  if (socketId === currentGame.playerOne) {
+    if (currentGame.state[activeTurn.startSpace].player === currentGame.currentTurn.player) {
+      console.log('player one is going')
+      checktheMoveType(currentGame, activeTurn)
+    } else {
+      console.log('it is not your turn player one');
+    }
+  } else if (socketId === currentGame.playerTwo ) {
+    if (currentGame.state[activeTurn.startSpace].player === currentGame.currentTurn.player) {
+      console.log('player two is going')
+      checktheMoveType(currentGame, activeTurn)
+    } else {
+      console.log('it is not your turn player two');
+    }
+  } 
 }
 
 function checktheMoveType(currentGame, activeTurn) {

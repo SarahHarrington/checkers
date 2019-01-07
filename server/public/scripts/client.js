@@ -7,6 +7,7 @@ let boardSpaces = document.querySelectorAll('.playable');
 let startGameButton = document.querySelector('#start-game');
 let playerDeclareMessage = document.querySelector('#player-declare');
 let gameMessage = document.querySelector('#game-message');
+let activePlayer;
 
 socket.on('aNewClientConnection', (id) => {
   console.log(id);
@@ -53,7 +54,7 @@ function displayGame(game) {
       boardSpaces[i - 1].appendChild(playerTwoPiece);
     }
   }
-  let activePlayer = document.querySelector(`#p${game.currentTurn.player}-side`);
+  activePlayer = document.querySelector(`#p${game.currentTurn.player}-side`);
   console.log(activePlayer);
   activePlayer.classList.add('glow');
   gameMessage.innerHTML = '';
@@ -69,6 +70,9 @@ function updateTheGame(game) {
   startSpace.removeChild(startSpacePiece);
   endSpace.appendChild(startSpacePiece);
   console.log(startSpace);
+  activePlayer.classList.remove('glow');
+  activePlayer = document.querySelector(`#p${game.playerTurn}-side`);
+  activePlayer.classList.add('glow');
 }
 
 function playerDeclare(player) {
