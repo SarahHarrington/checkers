@@ -32,6 +32,7 @@ io.on('connection', function (socket) {
     game.id = game.id + socket.id;
     game.state = gameState;
     activeGames.push(game);
+    
     io.to(socket.id).emit('playerDeclare', { player: 'p2' });
     game = {
       id: null,
@@ -85,6 +86,7 @@ io.on('connection', function (socket) {
   })
 
   socket.on('checkIfValidMove', (activeTurn) => {
+    console.log('active turn from the client:', activeTurn)
 
     let gameIndex = findGame(socket.id);
     let currentGame = activeGames[gameIndex];
